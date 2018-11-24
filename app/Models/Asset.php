@@ -1357,6 +1357,11 @@ class Asset extends Depreciable
     }
 
 
+    public function scopeOrderCostcenterNumber($query, $order)
+    {
+        return $query->join('costcenters', 'assets.costcenter_id', '=', 'costcenters.id')->orderBy('costcenters.costcenters_number', $order);
+    }
+
     /**
     * Query builder scope to order on assigned user
     *

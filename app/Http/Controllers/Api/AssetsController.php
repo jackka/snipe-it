@@ -241,6 +241,9 @@ class AssetsController extends Controller
             case 'model_number':
                 $assets->OrderModelNumber($order);
                 break;
+            case 'costcenter_number':
+                $assets->OrderCostcenterNumber($order);
+                break;
             case 'category':
                 $assets->OrderCategory($order);
                 break;
@@ -786,6 +789,9 @@ class AssetsController extends Controller
                 break;
             case 'model_number':
                 $assets->OrderModelNumber($order);
+                break;
+            case 'costcenter_number':
+                $assets->OrderCostcenterNumber($order);
                 break;
             case 'category':
                 $assets->OrderCategory($order);

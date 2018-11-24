@@ -546,6 +546,41 @@ Route::group(['prefix' => 'v1','namespace' => 'Api'], function () {
         ]
     ); // Models resource
 
+    
+    /*--- Costcenters API ---*/
+
+    Route::group(['prefix' => 'costcenters'], function () {
+
+        Route::get('assets',
+            [
+                'as' => 'api.costcenters.assets',
+                'uses'=> 'AssetCostcentersController@assets'
+            ]
+        );
+        Route::get('selectlist',
+            [
+                'as' => 'api.costcenters.selectlist',
+                'uses'=> 'AssetCostcentersController@selectlist'
+            ]
+        );
+    }); // Costcenters group
+
+
+    Route::resource('costcenters', 'AssetCostcentersController',
+        [
+            'names' =>
+                [
+                    'index' => 'api.costcenters.index',
+                    'show' => 'api.costcenters.show',
+                    'store' => 'api.costcenters.store',
+                    'update' => 'api.costcenters.update',
+                    'destroy' => 'api.costcenters.destroy'
+                ],
+            'except' => ['create', 'edit'],
+            'parameters' => ['costcenter' => 'costcenter_id']
+        ]
+    ); // Costcenters resource
+
 
 
 
