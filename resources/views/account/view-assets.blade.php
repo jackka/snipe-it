@@ -2,7 +2,7 @@
 
 {{-- Page title --}}
 @section('title')
-View Assets for  {{ $user->present()->fullName() }}
+Основные средства пользователя  {{ $user->present()->fullName() }}
 @parent
 @stop
 
