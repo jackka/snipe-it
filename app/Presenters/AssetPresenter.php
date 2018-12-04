@@ -120,7 +120,7 @@ class AssetPresenter extends Presenter
                 "title" => trans('admin/hardware/form.default_location'),
                 "visible" => false,
                 "formatter" => "deployedLocationFormatter"
-            ], [
+            ],/* [
                 "field" => "manufacturer",
                 "searchable" => true,
                 "sortable" => true,
@@ -134,14 +134,14 @@ class AssetPresenter extends Presenter
                 "title" => trans('general.supplier'),
                 "visible" => false,
                 "formatter" => "suppliersLinkObjFormatter"
-            ], [
+            ],*/ [
                 "field" => "purchase_date",
                 "searchable" => true,
                 "sortable" => true,
                 "visible" => false,
                 "title" => trans('general.purchase_date'),
                 "formatter" => "dateDisplayFormatter"
-            ], [
+            ],/* [
                 "field" => "purchase_cost",
                 "searchable" => true,
                 "sortable" => true,
@@ -161,7 +161,7 @@ class AssetPresenter extends Presenter
                 "visible" => false,
                 "title" => trans('general.eol'),
                 "formatter" => "dateDisplayFormatter"
-            ], [
+            ],*/ [
                 "field" => "warranty_months",
                 "searchable" => true,
                 "sortable" => true,
@@ -202,7 +202,7 @@ class AssetPresenter extends Presenter
                 "visible" => false,
                 "title" => trans('general.user_requests_count')
 
-            ], [
+            ],/* [
                 "field" => "created_at",
                 "searchable" => false,
                 "sortable" => true,
@@ -216,7 +216,7 @@ class AssetPresenter extends Presenter
                 "visible" => false,
                 "title" => trans('general.updated_at'),
                 "formatter" => "dateDisplayFormatter"
-            ], [
+            ], */[
                 "field" => "last_checkout",
                 "searchable" => false,
                 "sortable" => true,

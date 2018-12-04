@@ -45,7 +45,7 @@ class AssetMaintenancesPresenter extends Presenter
                 "sortable" => true,
                 "title" => trans('admin/hardware/table.asset_tag'),
                 "formatter" => "assetTagLinkFormatter"
-            ], [
+            ],/*[
                 "field" => "supplier",
                 "searchable" => true,
                 "sortable" => true,
@@ -53,7 +53,7 @@ class AssetMaintenancesPresenter extends Presenter
                 "title" => trans('general.supplier'),
                 "visible" => false,
                 "formatter" => "suppliersLinkObjFormatter"
-            ], [
+            ],*/ [
                 "field" => "location",
                 "searchable" => true,
                 "sortable" => true,
@@ -91,12 +91,12 @@ class AssetMaintenancesPresenter extends Presenter
                 "searchable" => true,
                 "sortable" => true,
                 "title" => trans('admin/asset_maintenances/table.is_warranty')
-            ], [
+            ], /*[
                 "field" => "cost",
                 "searchable" => true,
                 "sortable" => true,
                 "title" => trans('admin/asset_maintenances/form.cost')
-            ], [
+            ], */[
                 "field" => "user_id",
                 "searchable" => true,
                 "sortable" => true,
