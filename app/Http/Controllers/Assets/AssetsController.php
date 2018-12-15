@@ -128,11 +128,12 @@ class AssetsController extends Controller
             if (($serials) && (array_key_exists($a, $serials))) {
                 $asset->serial                  = $serials[$a];
             }
-            $asset->company_id              = Company::getIdForCurrentUser($request->input('company_id'));
+            //$asset->company_id              = Company::getIdForCurrentUser($request->input('company_id'));
             $asset->model_id                = $request->input('model_id');
             $asset->order_number            = $request->input('order_number');
             $asset->notes                   = $request->input('notes');
             $asset->user_id                 = Auth::id();
+            $asset->company_id              = $request->input('company_id'); // prevent change MVZ when asset will udpate.
             $asset->archived                = '0';
             $asset->physical                = '1';
             $asset->depreciate              = '0';
@@ -321,7 +322,7 @@ class AssetsController extends Controller
         $serial              = $request->input('serials');
         $asset->name         = $request->input('name');
         $asset->serial       = $serial[1];
-        $asset->company_id   = Company::getIdForCurrentUser($request->input('company_id'));
+        $asset->company_id   = $request->input('company_id'); // prevent change MVZ when asset will udpate.
         $asset->model_id     = $request->input('model_id');
         $asset->order_number = $request->input('order_number');
         $asset->asset_tag    = $asset_tag[1];
