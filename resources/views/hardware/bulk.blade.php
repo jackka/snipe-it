@@ -18,7 +18,6 @@
   <div class="col-md-8 col-md-offset-2">
 
     <p>{{ trans('admin/hardware/form.bulk_update_help') }}</p>
-
     <div class="callout callout-warning">
       <i class="fa fa-warning"></i> {{ trans('admin/hardware/form.bulk_update_warn', ['asset_count' => count($assets)]) }}
     </div>
@@ -113,6 +112,32 @@
               </div>
             </div>
           </div>
+
+            <!-- label Printed
+          <div class="form-group {{ $errors->has('status_id') ? ' has-error' : '' }}">
+            <label for="status_id" class="col-md-3 control-label">
+              {{ trans('admin/hardware/form.status') }}
+            </label>
+            <div class="col-md-7">
+              {{ Form::select('status_id', $statuslabel_list , Input::old('status_id'), array('class'=>'select2', 'style'=>'width:350px')) }}
+              {!! $errors->first('status_id', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
+            </div>
+          </div> -->
+
+            <!-- Custom Fields -->
+            <div class="form-group">
+              <label for="_snipeit_nnddodundod0_nnd0nnfnn_3" class="col-md-3 control-label">этикетка - статусы </label>
+              <div class="col-md-7 col-sm-12">
+
+
+                <!-- Listbox -->
+                <select class="format select2 form-control select2-hidden-accessible" name="_snipeit_nnddodundod0_nnd0nnfnn_3" tabindex="-1" aria-hidden="true"><option value="">Select any</option><option value="отпечатано" selected="selected">отпечатано</option><option value="наклеено">наклеено</option></select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 792.5px;"><span class="selection needsclick"><span class="select2-selection select2-selection--single needsclick" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-_snipeit_nnddodundod0_nnd0nnfnn_3-03-container"><span class="select2-selection__rendered needsclick" id="select2-_snipeit_nnddodundod0_nnd0nnfnn_3-03-container" title="отпечатано">отпечатано</span><span class="select2-selection__arrow needsclick" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper needsclick" aria-hidden="true"></span></span>
+
+              </div>
+
+            </div>
+
+
 
           <!-- Requestable -->
           <div class="form-group {{ $errors->has('requestable') ? ' has-error' : '' }}">
