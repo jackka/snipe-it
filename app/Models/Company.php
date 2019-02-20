@@ -73,14 +73,16 @@ final class Company extends SnipeModel
 
     private static function scopeCompanyablesDirectly($query, $column = 'company_id', $table_name = null )
     {
+        $company_ids = []; //wherein works with arrays only. $company_ids - should be initialized
         if (Auth::user()) {
-            $company_id = Auth::user()->company_id;
-        } else {
-            $company_id = null;
+            $user_id = Auth::user()->id;
+            $comp_user_conn = DB::table('company_user_relations')->where('user_id', '=', $user_id)->get()->toArray();
+            foreach ($comp_user_conn as $item) {
+                $company_ids[] = $item->company_id;
+            }
         }
-
         $table = ($table_name) ? DB::getTablePrefix().$table_name."." : '';
-        return $query->where($table.$column, '=', $company_id); 
+        return $query->wherein($table.$column,  $company_ids);
     }
 
     public static function getIdFromInput($unescaped_input)
@@ -122,9 +124,15 @@ final class Company extends SnipeModel
         } elseif (!static::isFullMultipleCompanySupportEnabled()) {
             return true;
         } else {
-            $current_user_company_id = Auth::user()->company_id;
+            $company_ids = []; // should be initialized as array for boolean return
+            $user_id = Auth::user()->id;   //Many Companies to one user for checkin procedure +
+            $comp_user_conn = DB::table('company_user_relations')->where ('user_id', '=', $user_id)->get()->toArray();
+            foreach ($comp_user_conn as $item ) {
+                $company_ids[] = $item->company_id; //Many Companies to one user for checkin procedure -
+            }
+            
             $companyable_company_id = $companyable->company_id;
-            return ($current_user_company_id == null || $current_user_company_id == $companyable_company_id || Auth::user()->isSuperUser());
+            return (count($company_ids) == null || in_array($companyable_company_id, $company_ids) || Auth::user()->isSuperUser());
         }
     }
 
