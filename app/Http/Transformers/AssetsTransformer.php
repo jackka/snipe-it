@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Http\Transformers\UsersTransformer;
 use Gate;
 use App\Helpers\Helper;
+use Illuminate\Support\Facades\Auth;
 
 class AssetsTransformer
 {
@@ -13,7 +14,14 @@ class AssetsTransformer
     {
         $array = array();
         foreach ($assets as $asset) {
-            $array[] = self::transformAsset($asset);
+            $cat = self::transformAsset($asset);
+            if (Auth::user()->username == "RU0FVG"){
+                if($cat["category"]["id"] == 15){
+                    $array[] = $cat;
+                }
+            } else {
+                $array[] = $cat;
+            };
         }
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
