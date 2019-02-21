@@ -73,16 +73,24 @@ final class Company extends SnipeModel
 
     private static function scopeCompanyablesDirectly($query, $column = 'company_id', $table_name = null )
     {
-        $company_ids = []; //wherein works with arrays only. $company_ids - should be initialized
         if (Auth::user()) {
+            $company_id = Auth::user()->company_id;
             $user_id = Auth::user()->id;
-            $comp_user_conn = DB::table('company_user_relations')->where('user_id', '=', $user_id)->get()->toArray();
-            foreach ($comp_user_conn as $item) {
-                $company_ids[] = $item->company_id;
+            $company_many_ids = []; // Wherein works with arrays only. $company_ids - should be initialized
+            $comp_user_conn = DB::table('company_user_relations')->where ('user_id', '=', $user_id)->get()->toArray();
+
+            foreach ($comp_user_conn as $item ) {
+                $company_many_ids[] = $item->company_id;
             }
+            $company_many_ids[] = $company_id;
+        } else {
+            $company_many_ids = []; // for wherein it should be an array
         }
+        $company_id = null;
+
         $table = ($table_name) ? DB::getTablePrefix().$table_name."." : '';
-        return $query->wherein($table.$column,  $company_ids);
+        return $query->where($table.$column, '=', $company_id);
+       // return $query->wherein($table.$column, $company_many_ids);
     }
 
     public static function getIdFromInput($unescaped_input)
