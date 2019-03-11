@@ -84,6 +84,27 @@ final class Company extends SnipeModel
         $table = ($table_name) ? DB::getTablePrefix().$table_name."." : '';
         return $query->wherein($table.$column,  $company_ids);
     }
+    
+    private static function scopeCompanyablesDirectlyAndMOL($query, $column = 'company_id', $table_name = null )
+    {
+        $company_ids = []; //wherein works with arrays only. $company_ids - should be initialized
+        $mol_users_ids = [];
+        if (Auth::user()) {
+            $user_id = Auth::user()->id;
+            $group_MOL = DB::table('groups')->where('name','=','МОЛ')->get()->first()->{'id'};
+            $mol_users = DB::table('users_groups')->where('group_id','=',$group_MOL)->get()->toArray();
+            $comp_user_conn = DB::table('company_user_relations')->where('user_id', '=', $user_id)->get()->toArray();
+            foreach ($comp_user_conn as $item) {
+                $company_ids[] = $item->company_id;
+            }
+            foreach ($mol_users as $item) {
+                $mol_users_ids[] = $item->user_id;
+            }
+        }
+        $table = ($table_name) ? DB::getTablePrefix().$table_name."." : '';
+        $query->wherein($table.$column,  $company_ids);
+        return $query->orwherein('id',  $mol_users_ids);
+    }
 
     public static function getIdFromInput($unescaped_input)
     {
@@ -163,6 +184,16 @@ final class Company extends SnipeModel
             return $query;
         } else {
             return static::scopeCompanyablesDirectly($query, $column, $table_name);
+        }
+    }   
+    
+    public static function scopeCompanyablesAndMOL($query, $column = 'company_id', $table_name = null )
+    {
+        // If not logged in and hitting this, assume we are on the command line and don't scope?'
+        if (!static::isFullMultipleCompanySupportEnabled() || (Auth::check() && Auth::user()->isSuperUser()) || (!Auth::check())) {
+            return $query;
+        } else {
+            return static::scopeCompanyablesDirectlyAndMOL($query, $column, $table_name);
         }
     }
 

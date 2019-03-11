@@ -144,7 +144,7 @@ class UsersController extends Controller
             ]
             )->where('show_in_list', '=', '1');
 
-        $users = Company::scopeCompanyables($users);
+        $users = Company::scopeCompanyablesAndMOL($users);
 
         if ($request->filled('search')) {
             $users = $users->where('first_name', 'LIKE', '%'.$request->get('search').'%')
