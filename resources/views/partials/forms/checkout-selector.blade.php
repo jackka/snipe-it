@@ -7,12 +7,12 @@
                 <input name="checkout_to_type" value="user" type="radio" checked="checked"><i class="fa fa-user"></i> {{ trans('general.user') }}
             </label>
             @endif
-            @if ((isset($asset_select)) && ($asset_select!='false'))
+            @if ((isset($asset_select)) && ($asset_select!='false') && false)
             <label class="btn btn-default">
                 <input name="checkout_to_type" value="asset" type="radio"><i class="fa fa-barcode"></i> {{ trans('general.asset') }}
             </label>
             @endif
-            @if ((isset($location_select)) && ($location_select!='false'))
+            @if ((isset($location_select)) && ($location_select!='false') && false)
             <label class="btn btn-default">
                 <input name="checkout_to_type" value="location" class="active" type="radio"><i class="fa fa-map-marker"></i> {{ trans('general.location') }}
             </label>
