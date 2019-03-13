@@ -120,12 +120,13 @@ class AssetsController extends Controller
 
         $asset->name                    = $request->input('name');
         $asset->serial                  = $request->input('serial');
-        $asset->company_id              = Company::getIdForCurrentUser($request->input('company_id'));
+        //$asset->company_id              = Company::getIdForCurrentUser($request->input('company_id'));
         $asset->model_id                = $request->input('model_id');
         $asset->order_number            = $request->input('order_number');
         $asset->notes                   = $request->input('notes');
         $asset->asset_tag               = $request->input('asset_tag');
         $asset->user_id                 = Auth::id();
+        $asset->company_id              = $request->input('company_id'); // prevent change MVZ when asset will udpate.
         $asset->archived                = '0';
         $asset->physical                = '1';
         $asset->depreciate              = '0';
@@ -335,7 +336,7 @@ class AssetsController extends Controller
         // Update the asset data
         $asset->name         = $request->input('name');
         $asset->serial       = $request->input('serial');
-        $asset->company_id   = Company::getIdForCurrentUser($request->input('company_id'));
+        $asset->company_id   = $request->input('company_id'); // prevent change MVZ when asset will udpate.
         $asset->model_id     = $request->input('model_id');
         $asset->order_number = $request->input('order_number');
         $asset->asset_tag    = $request->input('asset_tag');
