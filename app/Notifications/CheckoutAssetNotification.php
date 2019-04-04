@@ -9,6 +9,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use phpoffice\phpspreadsheet\AssetMoveForm;
+use DB;
 
 class CheckoutAssetNotification extends Notification
 {
@@ -145,6 +147,8 @@ class CheckoutAssetNotification extends Notification
         if (($this->item->model) && ($this->item->model->fieldset)) {
             $fields = $this->item->model->fieldset->fields;
         }
+
+        AssetMoveForm::FillForm($this);
 
         $message = (new MailMessage)->markdown('notifications.markdown.checkout-asset',
             [

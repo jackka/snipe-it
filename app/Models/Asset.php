@@ -232,7 +232,27 @@ class Asset extends Depreciable
                 $this->location_id = $target->id;
             }
         }
-        
+
+            // Temporary code for local business process support. Reset rtd_location of asset to user location bus sphere
+        $bus_sphere_name = mb_strimwidth($target->location["name"], 0, 4);
+        $this->rtd_location_id = DB::table('locations')->where( 'name','=', $bus_sphere_name )->get()->first()->{'id'};
+
+            // Temporary code for local business process support. Reset MVZ to user MVZ.
+        $user_id = $target->attributes["id"];
+        $grMol_id = DB::table('groups')->where( 'name','=', "МОЛ" )->get()->first()->{'id'};
+        $usIsMol = false;
+
+        $mols_id = DB::table('users_groups')->where( 'group_id','=', $grMol_id )->get()->toarray();
+        foreach ($mols_id as $item ) {
+            if ( $user_id == $item->user_id ){
+                $usIsMol = true;
+            }
+        }
+
+        if ( !$usIsMol ) {
+            $this->company_id = $target->company_id;
+        }
+
         /**
          * Does the user have to confirm that they accept the asset?
          *

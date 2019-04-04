@@ -12,8 +12,12 @@ use App\Models\Consumable;
 use App\Models\License;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\AcceptNotification;
 use App\Notifications\RequestAssetNotification;
 use App\Notifications\RequestAssetCancelationNotification;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\SlackMessage;
+use Illuminate\Notifications\Notification;
 use Auth;
 use Config;
 use DB;
@@ -321,6 +325,14 @@ class ViewAssetsController extends Controller
             $affected_asset = $logaction->item;
             $affected_asset->accepted = $accepted;
             $affected_asset->save();
+            $admin_id = $findlog["attributes"]["user_id"];
+            $admin = User::findOrFail($admin_id);
+            $admin->notify(new AcceptNotification($admin, $logID));
+
+            //  Temporary code for local business process support. Reset MVZ to user MVZ after accept.
+            $result = DB::table('assets')
+                ->where('id', $findlog["attributes"]["item_id"])
+                ->update(array('company_id' => $findlog["attributes"]["company_id"]));
         }
 
         if ($update_checkout) {

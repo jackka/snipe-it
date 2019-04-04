@@ -15,7 +15,7 @@ use App\Notifications\CheckoutConsumableNotification;
 use App\Notifications\CheckoutLicenseNotification;
 use App\Notifications\CheckinLicenseNotification;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
 
 trait Loggable
 {
@@ -75,8 +75,33 @@ trait Loggable
 
         $checkoutClass = null;
 
-        if (method_exists($target, 'notify')) {
-            $target->notify(new static::$checkoutClass($params));
+        $user_id = $target->attributes["id"];
+        $grMol_id = DB::table('groups')->where( 'name','=', "МОЛ" )->get()->first()->{'id'};
+        $usIsMol = false;
+
+        $mols_id = DB::table('users_groups')->where( 'group_id','=', $grMol_id )->get()->toarray();
+        foreach ($mols_id as $item ) {
+            if ( $user_id == $item->user_id ){
+                $usIsMol = true;
+            }
+
+        }
+
+        $item_MVZ = $this->attributes["company_id"];
+        $usIsOwner = false;
+
+        $comp_user_rel = DB::table('company_user_relations')->where('user_id', '=', $user_id)->get()->toArray();
+        foreach ($comp_user_rel as $item) {
+            if ( $item_MVZ == $item->company_id ){
+                $usIsOwner = true;
+            }
+        }
+
+        if ( !$usIsOwner and $usIsMol ) {
+
+            if (method_exists($target, 'notify')) {
+                $target->notify(new static::$checkoutClass($params));
+            }
         }
 
         // Send to the admin, if settings dictate
