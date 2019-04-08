@@ -324,15 +324,17 @@ class ViewAssetsController extends Controller
         if (($findlog->item_id!='') && ($findlog->item_type==Asset::class)) {
             $affected_asset = $logaction->item;
             $affected_asset->accepted = $accepted;
+            $affected_asset->company_id = $logaction->company_id;
             $affected_asset->save();
             $admin_id = $findlog["attributes"]["user_id"];
             $admin = User::findOrFail($admin_id);
             $admin->notify(new AcceptNotification($admin, $logID));
 
             //  Temporary code for local business process support. Reset MVZ to user MVZ after accept.
-            $result = DB::table('assets')
+/*            $result = DB::table('assets')
                 ->where('id', $findlog["attributes"]["item_id"])
                 ->update(array('company_id' => $findlog["attributes"]["company_id"]));
+*/
         }
 
         if ($update_checkout) {

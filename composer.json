@@ -52,7 +52,8 @@
         ],
         "psr-4": {
             "App\\": "app/"
-        }
+        },
+        "files": ["app/Notifications/AssetMoveForm.php"]
     },
     "autoload-dev": {
         "classmap": [
