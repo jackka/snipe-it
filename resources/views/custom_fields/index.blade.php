@@ -1,8 +1,12 @@
-@extends('layouts/default')
+@extends('layouts/default', [
+    'helpText' => trans('admin/custom_fields/general.about_fieldsets_text'),
+    'helpPosition' => 'right',
+])
+
 
 {{-- Page title --}}
 @section('title')
-  Manage {{ trans('admin/custom_fields/general.custom_fields') }}
+  {{ trans('admin/custom_fields/general.manage') }} {{ trans('admin/custom_fields/general.custom_fields') }}
 @parent
 @stop
 
@@ -10,14 +14,14 @@
 
 @can('view', \App\Models\CustomFieldset::class)
 <div class="row">
-  <div class="col-md-9">
+  <div class="col-md-12">
     <div class="box box-default">
 
       <div class="box-header with-border">
-        <h3 class="box-title">{{ trans('admin/custom_fields/general.fieldsets') }}</h3>
+        <h2 class="box-title">{{ trans('admin/custom_fields/general.fieldsets') }}</h2>
         <div class="box-tools pull-right">
           @can('create', \App\Models\CustomFieldset::class)
-          <a href="{{ route('fieldsets.create') }}" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Create a new fieldset">{{ trans('admin/custom_fields/general.create_fieldset') }}</a>
+          <a href="{{ route('fieldsets.create') }}" class="btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('admin/custom_fields/general.create_fieldset_title') }}">{{ trans('admin/custom_fields/general.create_fieldset') }}</a>
           @endcan
         </div>
       </div><!-- /.box-header -->
@@ -44,7 +48,7 @@
               <th>{{ trans('general.name') }}</th>
               <th>{{ trans('admin/custom_fields/general.qty_fields') }}</th>
               <th>{{ trans('admin/custom_fields/general.used_by_models') }}</th>
-              <th></th>
+              <th>{{ trans('table.actions') }}</th>
             </tr>
           </thead>
 
@@ -53,27 +57,45 @@
             @foreach($custom_fieldsets AS $fieldset)
             <tr>
               <td>
-                {{ link_to_route("fieldsets.show",$fieldset->name,['id' => $fieldset->id]) }}
+                {{ link_to_route("fieldsets.show",$fieldset->name,['fieldset' => $fieldset->id]) }}
               </td>
               <td>
                 {{ $fieldset->fields->count() }}
               </td>
               <td>
                 @foreach($fieldset->models as $model)
-                  <a href="{{ route('models.show', $model->id) }}" class="label label-default">{{ $model->name }}</a>
+                  <a href="{{ route('models.show', $model->id) }}" class="label label-default">{{ $model->name }}{{ ($model->model_number) ? ' ('.$model->model_number.')' : '' }}</a>
 
                 @endforeach
               </td>
               <td>
+
+                <nobr>
+
+                @can('update', $fieldset)
+
+                  <a href="{{ route('fieldsets.show', ['fieldset' => $fieldset->id]) }}" data-tooltip="true" title="{{ trans('general.edit_fieldset') }}">
+                    <button type="submit" class="btn btn-info btn-sm">
+                      <i class="fa-regular fa-rectangle-list"></i>
+                    </button>
+                  </a>
+
+                  <a href="{{ route('fieldsets.edit', $fieldset->id) }}" class="btn btn-warning btn-sm" data-tooltip="true" title="{{ trans('general.update') }}">
+                    <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                    <span class="sr-only">{{ trans('button.edit') }}</span>
+                  </a>
+                @endcan
+
                 @can('delete', $fieldset)
-                {{ Form::open(['route' => array('fieldsets.destroy', $fieldset->id), 'method' => 'delete']) }}
+                {{ Form::open(['route' => array('fieldsets.destroy', $fieldset->id), 'method' => 'delete','style' => 'display:inline-block']) }}
                   @if($fieldset->models->count() > 0)
-                  <button type="submit" class="btn btn-danger btn-sm disabled" disabled><i class="fa fa-trash"></i></button>
+                  <button type="submit" class="btn btn-danger btn-sm disabled" data-tooltip="true" title="{{ trans('general.cannot_be_deleted') }}" disabled><i class="fas fa-trash"></i></button>
                   @else
-                  <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
+                  <button type="submit" class="btn btn-danger btn-sm" data-tooltip="true" title="{{ trans('general.delete') }}"><i class="fas fa-trash"></i></button>
                   @endif
                 {{ Form::close() }}
                 @endcan
+                  </nobr>
               </td>
             </tr>
             @endforeach
@@ -83,12 +105,9 @@
       </div><!-- /.box-body -->
     </div><!-- /.box.box-default -->
 
-  </div> <!-- .col-md-9-->
-  <!-- side address column -->
-  <div class="col-md-3">
-    <h4>{{ trans('admin/custom_fields/general.about_fieldsets_title') }}</h4>
-    <p>{{ trans('admin/custom_fields/general.about_fieldsets_text') }} </p>
-  </div>
+  </div> <!-- .col-md-12-->
+
+
 </div> <!-- .row-->
 @endcan
 @can('view', \App\Models\CustomField::class)
@@ -96,10 +115,10 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-header with-border">
-        <h3 class="box-title">{{ trans('admin/custom_fields/general.custom_fields') }}</h3>
+        <h2 class="box-title">{{ trans('admin/custom_fields/general.custom_fields') }}</h2>
         <div class="box-tools pull-right">
           @can('create', \App\Models\CustomField::class)
-          <a href="{{ route('fields.create') }}" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Create a new custom field">{{ trans('admin/custom_fields/general.create_field') }}</a>
+          <a href="{{ route('fields.create') }}" class="btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('admin/custom_fields/general.create_field_title') }}">{{ trans('admin/custom_fields/general.create_field') }}</a>
           @endcan
         </div>
 
@@ -125,14 +144,24 @@
                 }'>
           <thead>
             <tr>
-              <th data-searchable="true">{{ trans('general.name') }}</th>
-              <th data-searchable="true">Help Text</th>
-              <th data-searchable="true">Email</th>
-              <th data-visible="false">DB Field</th>
-              <th data-searchable="true">{{ trans('admin/custom_fields/general.field_format') }}</th>
-              <th data-searchable="true">{{ trans('admin/custom_fields/general.field_element_short') }}</th>
+              <th data-sortable="true" data-searchable="true">{{ trans('general.name') }}</th>
+              <th data-sortable="true" data-searchable="true">{{ trans('admin/custom_fields/general.help_text')}}</th>
+              <th data-sortable="true" data-searchable="true">{{ trans('admin/custom_fields/general.unique') }}</th>
+              <th data-sortable="true" data-visible="false">{{ trans('admin/custom_fields/general.db_field') }}</th>
+              <th data-sortable="true" data-searchable="true">{{ trans('admin/custom_fields/general.field_format') }}</th>
+              <th data-sortable="true"><i class="fa fa-lock" aria-hidden="true"></i>
+                <span class="hidden-xs hidden-sm hidden-md hidden-lg">{{ trans('admin/custom_fields/general.encrypted') }}</span>
+              </th>
+              <th data-sortable="true" class="text-center"><i class="fa fa-list" aria-hidden="true"></i>
+                <span class="hidden-xs hidden-sm hidden-md hidden-lg">{{ trans('admin/custom_fields/general.show_in_listview_short') }}</span>
+              </th>
+              <th data-visible="false" data-sortable="true" class="text-center"><i class="fa fa-eye" aria-hidden="true"><span class="sr-only">Visible to User</span></i></th>
+              <th data-sortable="true" data-searchable="true" class="text-center"><i class="fa fa-envelope" aria-hidden="true"><span class="sr-only">{{ trans('admin/custom_fields/general.show_in_email_short') }}</span></i></th>
+              <th data-sortable="true" data-searchable="true" class="text-center"><i class="fa fa-laptop fa-fw" aria-hidden="true"><span class="sr-only">{{ trans('admin/custom_fields/general.show_in_requestable_list_short') }}</span></i></th>
+              <th data-sortable="true" data-searchable="true" class="text-center"><i class="fa-solid fa-fingerprint"><span class="sr-only">{{ trans('admin/custom_fields/general.unique') }}</span></i></th>
+              <th data-sortable="true" data-searchable="true" class="text-center">{{ trans('admin/custom_fields/general.field_element_short') }}</th>
               <th data-searchable="true">{{ trans('admin/custom_fields/general.fieldsets') }}</th>
-              <th></th>
+              <th>{{ trans('button.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -140,14 +169,22 @@
             <tr>
               <td>{{ $field->name }}</td>
               <td>{{ $field->help_text }}</td>
-              <td>{!! ($field->show_in_email=='1') ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-times text-danger"></i>'  !!}</td>
+
+              <td class="text-center">{!! ($field->is_unique=='1') ? '<i class="fas fa-check text-success" aria-hidden="true"><span class="sr-only">'.trans('general.yes').'</span></i>' : '<i class="fas fa-times text-danger" aria-hidden="true"><span class="sr-only">'.trans('general.no').'</span></i>'  !!}</td>
               <td>
                  <code>{{ $field->convertUnicodeDbSlug() }}</code>
                 @if ($field->convertUnicodeDbSlug()!=$field->db_column)
-                  <br><i class="fa fa-warning text-danger"></i>WARNING. This field is in the custom fields table as <code>{{  $field->db_column }}</code> but should be <code>{{ $field->convertUnicodeDbSlug() }}</code>.
+                  <br><i class="fas fa-exclamation-triangle text-danger"></i>
+                  {!! trans('admin/custom_fields/general.db_convert_warning',['db_column' => $field->db_column, 'expected' => $field->convertUnicodeDbSlug()]) !!}
                 @endif
               </td>
               <td>{{ $field->format }}</td>
+              <td class="text-center">{!!  ($field->field_encrypted=='1' ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-times text-danger"></i>') !!}</td>
+              <td class="text-center">{!!  ($field->show_in_listview=='1' ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-times text-danger"></i>') !!}</td>
+              <td class="text-center">{!!  ($field->display_in_user_view=='1' ? '<i class="fa fa-check text-success"></i>' : '<i class="fa fa-times text-danger"></i>') !!}</td>
+              <td class="text-center">{!! ($field->show_in_email=='1') ? '<i class="fas fa-check text-success" aria-hidden="true"><span class="sr-only">'.trans('general.yes').'</span></i>' : '<i class="fas fa-times text-danger" aria-hidden="true"><span class="sr-only">'.trans('general.no').'</span></i>'  !!}</td>
+              <td class="text-center">{!! ($field->show_in_requestable_list=='1') ? '<i class="fas fa-check text-success" aria-hidden="true"><span class="sr-only">'.trans('general.yes').'</span></i>' : '<i class="fas fa-times text-danger" aria-hidden="true"><span class="sr-only">'.trans('general.no').'</span></i>'  !!}</td>
+              <td class="text-center">{!! ($field->is_unique=='1') ? '<i class="fas fa-check text-success" aria-hidden="true"><span class="sr-only">'.trans('general.yes').'</span></i>' : '<i class="fas fa-times text-danger" aria-hidden="true"><span class="sr-only">'.trans('general.no').'</span></i>'  !!}</td>
               <td>{{ $field->element }}</td>
               <td>
                 @foreach($field->fieldset as $fieldset)
@@ -156,18 +193,29 @@
               </td>
               <td>
                 <nobr>
+                  {{ Form::open(array('route' => array('fields.destroy', $field->id), 'method' => 'delete', 'style' => 'display:inline-block')) }}
                   @can('update', $field)
-                <a href="{{ route('fields.edit', $field->id) }}" class="btn btn-warning btn-sm"><i class="fa fa-pencil"></i></a>
-                @endcan               
-                @can('delete', $field)
-                {{ Form::open(array('route' => array('fields.destroy', $field->id), 'method' => 'delete', 'style' => 'display:inline-block')) }}
-                @if($field->fieldset->count()>0)
-                <button type="submit" class="btn btn-danger btn-sm disabled" disabled><i class="fa fa-trash"></i></button>
-                @else
-                <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
-                @endif
-                {{ Form::close() }}
+                    <a href="{{ route('fields.edit', $field->id) }}" class="btn btn-warning btn-sm" data-tooltip="true" title="{{ trans('general.update') }}">
+                      <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                      <span class="sr-only">{{ trans('button.edit') }}</span>
+                    </a>
                 @endcan
+
+                @can('delete', $field)
+
+                  @if($field->fieldset->count()>0)
+                    <button type="submit" class="btn btn-danger btn-sm disabled" data-tooltip="true" title="{{ trans('general.cannot_be_deleted') }}" disabled>
+                      <i class="fas fa-trash" aria-hidden="true"></i>
+                      <span class="sr-only">{{ trans('button.delete') }}</span></button>
+                  @else
+                    <button type="submit" class="btn btn-danger btn-sm" data-tooltip="true" title="{{ trans('general.delete') }}">
+                      <i class="fas fa-trash" aria-hidden="true"></i>
+                      <span class="sr-only">{{ trans('button.delete') }}</span>
+                    </button>
+                  @endif
+
+                @endcan
+                  {{ Form::close() }}
                 </nobr>
               </td>
             </tr>

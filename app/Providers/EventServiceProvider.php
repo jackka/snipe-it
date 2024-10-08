@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Setting;
-use App\Events\SettingSaved;
-use App\Listeners\LogListener;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Event;
 use App\Listeners\CheckoutableListener;
+use App\Listeners\LogListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -18,15 +14,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'Illuminate\Auth\Events\Login' => [
+            \App\Listeners\LogSuccessfulLogin::class,
+        ],
 
-            'Illuminate\Auth\Events\Login' => [
-                'App\Listeners\LogSuccessfulLogin',
-            ],
-
-            'Illuminate\Auth\Events\Failed' => [
-                'App\Listeners\LogFailedLogin',
-            ],
-        ];
+        'Illuminate\Auth\Events\Failed' => [
+            \App\Listeners\LogFailedLogin::class,
+        ],
+    ];
 
     /**
      * The subscriber classes to register.
@@ -35,24 +30,6 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $subscribe = [
         LogListener::class,
-        CheckoutableListener::class
+        CheckoutableListener::class,
     ];
-
-    /**
-     * Register any events for your application.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        parent::boot();
-
-        /**
-         * Clear the LDAP settings cache when the settings model is saved
-         */
-        Event::listen(SettingSaved::class, function () {
-            Cache::forget(Setting::APP_SETTINGS_KEY);
-            Cache::forget(Setting::SETUP_CHECK_KEY);
-        });
-    }
 }

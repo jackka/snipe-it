@@ -1,8 +1,6 @@
 <?php
 
 return array(
-    'about_accessories_title' 			=> 'Tentang Aksesoris',
-    'about_accessories_text'  			=> 'Aksesoris adalah Aset yang tidak memiliki nomor seri (atau Anda tidak peduli tentang pelacakan mereka secara unik). Misalnya, mouse komputer atau keyboard.',
     'accessory_category' 				=> 'Kategori Aksesoris',
     'accessory_name'  					=> 'Nama Aksesoris',
     'checkout'  							=> 'Keluarkan Aksesoris',
@@ -18,5 +16,7 @@ return array(
     'update'  							=> 'Perbarui Aksesoris',
     'use_default_eula'					=> 'Gunakan <a href="#" data-toggle="modal" data-target="#eulaModal"> standar primer EULA </a> gantinya.',
     'use_default_eula_disabled'			=> '<del> Gunakan EULA standar utama sebagai gantinya. </ del> Tidak ada standar utama EULA diatur. Silakan menambahkan satu di Settings.',
+    'clone'                             => 'Clone Accessory',
+    'delete_disabled'                   => 'This accessory cannot be deleted yet because some items are still checked out.',
 
 );

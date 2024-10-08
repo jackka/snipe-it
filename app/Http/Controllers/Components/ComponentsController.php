@@ -1,13 +1,17 @@
 <?php
+
 namespace App\Http\Controllers\Components;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
 use App\Models\Company;
 use App\Models\Component;
+use App\Helpers\Helper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 /**
  * This class controls all actions related to Components for
@@ -30,6 +34,7 @@ class ComponentsController extends Controller
     public function index()
     {
         $this->authorize('view', Component::class);
+
         return view('components/index');
     }
 
@@ -46,10 +51,10 @@ class ComponentsController extends Controller
     public function create()
     {
         $this->authorize('create', Component::class);
+
         return view('components/edit')->with('category_type', 'component')
             ->with('item', new Component);
     }
-
 
     /**
      * Validate and store data for new component.
@@ -67,6 +72,7 @@ class ComponentsController extends Controller
         $component = new Component();
         $component->name                   = $request->input('name');
         $component->category_id            = $request->input('category_id');
+        $component->supplier_id            = $request->input('supplier_id');
         $component->location_id            = $request->input('location_id');
         $component->company_id             = Company::getIdForCurrentUser($request->input('company_id'));
         $component->order_number           = $request->input('order_number', null);
@@ -75,13 +81,17 @@ class ComponentsController extends Controller
         $component->purchase_date          = $request->input('purchase_date', null);
         $component->purchase_cost          = $request->input('purchase_cost', null);
         $component->qty                    = $request->input('qty');
-        $component->user_id                = Auth::id();
+        $component->created_by                = auth()->id();
+        $component->notes                  = $request->input('notes');
 
         $component = $request->handleImages($component);
 
+        session()->put(['redirect_option' => $request->get('redirect_option')]);
+
         if ($component->save()) {
-            return redirect()->route('components.index')->with('success', trans('admin/components/message.create.success'));
+            return redirect()->to(Helper::getRedirectOption($request, $component->id, 'Components'))->with('success', trans('admin/components/message.create.success'));
         }
+
         return redirect()->back()->withInput()->withErrors($component->getErrors());
     }
 
@@ -99,8 +109,10 @@ class ComponentsController extends Controller
     {
         if ($item = Component::find($componentId)) {
             $this->authorize('update', $item);
+
             return view('components/edit', compact('item'))->with('category_type', 'component');
         }
+
         return redirect()->route('components.index')->with('error', trans('admin/components/message.does_not_exist'));
     }
 
@@ -121,26 +133,41 @@ class ComponentsController extends Controller
         if (is_null($component = Component::find($componentId))) {
             return redirect()->route('components.index')->with('error', trans('admin/components/message.does_not_exist'));
         }
+        $min = $component->numCheckedOut();
+        $validator = Validator::make($request->all(), [
+            'qty' => "required|numeric|min:$min",
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         $this->authorize('update', $component);
 
         // Update the component data
-        $component->name                   = Input::get('name');
-        $component->category_id            = Input::get('category_id');
-        $component->location_id            = Input::get('location_id');
-        $component->company_id             = Company::getIdForCurrentUser(Input::get('company_id'));
-        $component->order_number           = Input::get('order_number');
-        $component->min_amt                = Input::get('min_amt');
-        $component->serial                 = Input::get('serial');
-        $component->purchase_date          = Input::get('purchase_date');
+        $component->name                   = $request->input('name');
+        $component->category_id            = $request->input('category_id');
+        $component->supplier_id            = $request->input('supplier_id');
+        $component->location_id            = $request->input('location_id');
+        $component->company_id             = Company::getIdForCurrentUser($request->input('company_id'));
+        $component->order_number           = $request->input('order_number');
+        $component->min_amt                = $request->input('min_amt');
+        $component->serial                 = $request->input('serial');
+        $component->purchase_date          = $request->input('purchase_date');
         $component->purchase_cost          = request('purchase_cost');
-        $component->qty                    = Input::get('qty');
+        $component->qty                    = $request->input('qty');
+        $component->notes                  = $request->input('notes');
 
         $component = $request->handleImages($component);
 
+        session()->put(['redirect_option' => $request->get('redirect_option')]);
+
         if ($component->save()) {
-            return redirect()->route('components.index')->with('success', trans('admin/components/message.update.success'));
+            return redirect()->to(Helper::getRedirectOption($request, $component->id, 'Components'))->with('success', trans('admin/components/message.update.success'));
         }
+
         return redirect()->back()->withInput()->withErrors($component->getErrors());
     }
 
@@ -163,14 +190,15 @@ class ComponentsController extends Controller
 
         // Remove the image if one exists
         if (Storage::disk('public')->exists('components/'.$component->image)) {
-            try  {
+            try {
                 Storage::disk('public')->delete('components/'.$component->image);
             } catch (\Exception $e) {
-                \Log::debug($e);
+                Log::debug($e);
             }
         }
 
         $component->delete();
+
         return redirect()->route('components.index')->with('success', trans('admin/components/message.delete.success'));
     }
 
@@ -190,6 +218,7 @@ class ComponentsController extends Controller
 
         if (isset($component->id)) {
             $this->authorize('view', $component);
+
             return view('components/view', compact('component'));
         }
         // Redirect to the user management page

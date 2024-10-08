@@ -2,6 +2,7 @@
 
 return array(
 
+    'invalid_category_type' => 'The category must be a consumable category.',
     'does_not_exist' => 'Förbrukningsartiklar existerar inte.',
 
     'create' => array(
@@ -23,7 +24,8 @@ return array(
      'checkout' => array(
         'error'   		=> 'Förbrukningsartiklarna är inte utcheckade, försök igen',
         'success' 		=> 'Förbrukningsbar utcheckad framgångsrik.',
-        'user_does_not_exist' => 'Den användaren är ogiltig. Var god försök igen.'
+        'user_does_not_exist' => 'Den användaren är ogiltig. Var god försök igen.',
+         'unavailable'      => 'Det finns inte tillräckligt med förbrukningsvaror för denna checkout. Vänligen kontrollera antalet kvar. ',
     ),
 
     'checkin' => array(

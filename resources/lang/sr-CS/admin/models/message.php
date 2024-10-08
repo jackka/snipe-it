@@ -2,40 +2,45 @@
 
 return array(
 
-    'does_not_exist' => 'Model does not exist.',
-    'assoc_users'	 => 'This model is currently associated with one or more assets and cannot be deleted. Please delete the assets, and then try deleting again. ',
-
+    'deleted' => 'Obrisani model imovine',
+    'does_not_exist' => 'Model ne postoji.',
+    'no_association' => 'UPOZORENJE! Model za ovu stavku je ili pogrešan ili nedostaje!',
+    'no_association_fix' => 'Ovo će polomiti stvari na čudne i užasne načine. Uredite odmah ovu imovinu da bi ste je povezali sa modelom.',
+    'assoc_users'	 => 'Ovaj je model trenutno povezan s jednom ili više imovina i ne može se izbrisati. Izbrišite imovinu pa pokušajte ponovo. ',
+    'invalid_category_type' => 'Ova kategorija mora biti kategorija imovine.',
 
     'create' => array(
-        'error'   => 'Model was not created, please try again.',
-        'success' => 'Model created successfully.',
-        'duplicate_set' => 'An asset model with that name, manufacturer and model number already exists.',
+        'error'   => 'Model nije kreiran, pokušajte ponovo.',
+        'success' => 'Model je uspešno kreiran.',
+        'duplicate_set' => 'Model imovine s tim nazivom, proizvođačem i brojem modela već postoji.',
     ),
 
     'update' => array(
-        'error'   => 'Model was not updated, please try again',
-        'success' => 'Model updated successfully.'
+        'error'   => 'Model nije ažuriran, pokušajte ponovo',
+        'success' => 'Model je uspešno ažuriran.',
     ),
 
     'delete' => array(
-        'confirm'   => 'Are you sure you wish to delete this asset model?',
-        'error'   => 'There was an issue deleting the model. Please try again.',
-        'success' => 'The model was deleted successfully.'
+        'confirm'   => 'Jeste li sigurni da želite izbrisati ovaj model imovine?',
+        'error'   => 'Došlo je do problema s brisanjem modela. Molim pokušajte ponovo.',
+        'success' => 'Model je uspešno izbrisan.'
     ),
 
     'restore' => array(
-        'error'   		=> 'Model was not restored, please try again',
-        'success' 		=> 'Model restored successfully.'
+        'error'   		=> 'Model nije obnovljen, pokušajte ponovo',
+        'success' 		=> 'Model je uspešno obnovljen.'
     ),
 
     'bulkedit' => array(
-        'error'   		=> 'No fields were changed, so nothing was updated.',
-        'success' 		=> 'Models updated.'
+        'error'   		=> 'Polja nisu menjana, tako da ništa nije ažurirano.',
+        'success' 		=> 'Model je uspešno izmenjen. |:model_count modela je uspešno izmenjeno.',
+        'warn'          => 'Spremate se da izmenite svojstva sledećeg modela:|Spremate se da izmenite svojstva sledećih :model_count modela:',
+
     ),
 
     'bulkdelete' => array(
-        'error'   		    => 'No models were selected, so nothing was deleted.',
-        'success' 		    => ':success_count model(s) deleted!',
+        'error'   		    => 'Nijedan model nije odabran, tako da ništa nije izbrisano.',
+        'success' 		    => 'Model je obrisan!|:success_count modela je obrisano!',
         'success_partial' 	=> ':success_count model(s) were deleted, however :fail_count were unable to be deleted because they still have assets associated with them.'
     ),
 

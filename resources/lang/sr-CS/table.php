@@ -2,9 +2,10 @@
 
 return array(
 
-    'actions'	 	=> 'Actions',
-    'action' 		=> 'Action',
-    'by'      		=> 'By',
-    'item' 			=> 'Item',
+    'actions'	 	        => 'Akcije',
+    'action' 		        => 'Akcija',
+    'by'      		        => 'By',
+    'item' 			        => 'Artikal',
+    'no_matching_records'   => 'Nisu pronađeni odgovarajući zapisi',
 
 );

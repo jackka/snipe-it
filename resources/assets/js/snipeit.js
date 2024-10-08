@@ -1,4 +1,11 @@
 
+
+// var jQuery = require('jquery');
+// window.jQuery = jQuery
+// window.$ = jQuery
+
+require('./bootstrap');
+
 /**
  * Module containing core application logic.
  * @param  {jQuery} $        Insulated jQuery object
@@ -63,7 +70,7 @@ pieOptions = {
 
     //String - A legend template
     legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li>" +
-    "<i class='fa fa-circle-o' style='color: <%=segments[i].fillColor%>'></i>" +
+    "<i class='fas fa-circle-o' style='color: <%=segments[i].fillColor%>'></i>" +
     "<%if(segments[i].label){%><%=segments[i].label%><%}%> foo</li><%}%></ul>",
     //String - A tooltip template
     tooltipTemplate: "<%=value %> <%=label%> "
@@ -73,60 +80,52 @@ pieOptions = {
 //- END PIE CHART -
 //-----------------
 
+var baseUrl = $('meta[name="baseUrl"]').attr('content');
 
+$(function () {
 
-(function($, settings) {
-    var Components = {};
-    Components.modals = {};
+    var $el = $('table');
+
+    // confirm restore modal
+
+    $el.on('click', '.restore-asset', function (evnt) {
+        var $context = $(this);
+        var $restoreConfirmModal = $('#restoreConfirmModal');
+        var href = $context.attr('href');
+        var message = $context.attr('data-content');
+        var title = $context.attr('data-title');
+
+        $('#confirmModalLabel').text(title);
+        $restoreConfirmModal.find('.modal-body').text(message);
+        $('#restoreForm').attr('action', href);
+        $restoreConfirmModal.modal({
+            show: true
+        });
+        return false;
+    });
 
     // confirm delete modal
-    Components.modals.confirmDelete = function() {
-        var $el = $('table');
 
-        var events = {
-            'click': function(evnt) {
-                var $context = $(this);
-                var $dataConfirmModal = $('#dataConfirmModal');
-                var href = $context.attr('href');
-                var message = $context.attr('data-content');
-                var title = $context.attr('data-title');
+    $el.on('click', '.delete-asset', function (evnt) {
+        var $context = $(this);
+        var $dataConfirmModal = $('#dataConfirmModal');
+        var href = $context.attr('href');
+        var message = $context.attr('data-content');
+        var title = $context.attr('data-title');
 
-                $('#myModalLabel').text(title);
-                $dataConfirmModal.find('.modal-body').text(message);
-                $('#deleteForm').attr('action', href);
-                $dataConfirmModal.modal({
-                    show: true
-                });
-                return false;
-            }
-        };
-
-        var render = function() {
-            $el.on('click', '.delete-asset', events['click']);
-        };
-
-        return {
-            render: render
-        };
-    };
-
-
-    /**
-     * Application start point
-     * Component definition stays out of load event, execution only happens.
-     */
-    $(function() {
-        new Components.modals.confirmDelete().render();
+        $('#myModalLabel').text(title);
+        $dataConfirmModal.find('.modal-body').text(message);
+        $('#deleteForm').attr('action', href);
+        $dataConfirmModal.modal({
+            show: true
+        });
+        return false;
     });
-}(jQuery, window.snipeit.settings));
-
-$(document).ready(function () {
 
     /*
     * Slideout help menu
     */
      $('.slideout-menu-toggle').on('click', function(event){
-       console.log('clicked');
         event.preventDefault();
         // create menu variables
         var slideoutMenu = $('.slideout-menu');
@@ -149,31 +148,18 @@ $(document).ready(function () {
         }
      });
 
-     /*
-     * iCheck checkbox plugin
-     */
-
-     $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-         checkboxClass: 'icheckbox_minimal-blue',
-         radioClass: 'iradio_minimal-blue'
-     });
 
 
      /*
      * Select2
      */
 
-     var iOS = /iPhone|iPad|iPod/.test(navigator.userAgent)  && !window.MSStream;
-     if(!iOS)
-     {
-        // Vue collision: Avoid overriding a vue select2 instance
-        // by checking to see if the item has already been select2'd.
         $('select.select2:not(".select2-hidden-accessible")').each(function (i,obj) {
             {
                 $(obj).select2();
             }
         });
-     }
+
 
     // $('.datepicker').datepicker();
     // var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
@@ -194,11 +180,13 @@ $(document).ready(function () {
              */
             placeholder: '',
             allowClear: true,
+            language: $('meta[name="language"]').attr('content'),
+            dir: $('meta[name="language-direction"]').attr('content'),
             
             ajax: {
 
                 // the baseUrl includes a trailing slash
-                url: Ziggy.baseUrl + 'api/v1/' + endpoint + '/selectlist',
+                url: baseUrl + 'api/v1/' + endpoint + '/selectlist',
                 dataType: 'json',
                 delay: 250,
                 headers: {
@@ -213,24 +201,24 @@ $(document).ready(function () {
                     };
                     return data;
                 },
-                processResults: function (data, params) {
+                /* processResults: function (data, params) {
 
                     params.page = params.page || 1;
 
                     var answer =  {
                         results: data.items,
                         pagination: {
-                            more: "true" //(params.page  < data.page_count)
+                            more: data.pagination.more
                         }
                     };
 
                     return answer;
-                },
+                }, */
                 cache: true
             },
-            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-            templateResult: formatDatalist,
-            templateSelection: formatDataSelection
+            //escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            templateResult: formatDatalistSafe,
+            //templateSelection: formatDataSelection
         });
 
     });
@@ -283,7 +271,7 @@ $(document).ready(function () {
 			var endpoint = element.data("endpoint");
 			var assetStatusType = element.data("asset-status-type");
 			$.ajax({
-				url: Ziggy.baseUrl + 'api/v1/' + endpoint + '/selectlist?search='+value+'&page=1' + (assetStatusType ? '&assetStatusType='+assetStatusType : ''),
+				url: baseUrl + 'api/v1/' + endpoint + '/selectlist?search='+value+'&page=1' + (assetStatusType ? '&assetStatusType='+assetStatusType : ''),
 				dataType: 'json',
 				headers: {
 					"X-Requested-With": 'XMLHttpRequest',
@@ -297,11 +285,11 @@ $(document).ready(function () {
                 });
 				
 				// makes sure we're not selecting the same thing twice for multiples
-				var filteredResponse = response.items.filter(function(item) {
+				var filteredResponse = response.results.filter(function(item) {
 					return currentlySelected.indexOf(+item.id) < 0;
 				});
 
-				var first = (currentlySelected.length > 0) ? filteredResponse[0] : response.items[0];
+				var first = (currentlySelected.length > 0) ? filteredResponse[0] : response.results[0];
 				
 				if(first && first.id) {
 					first.selected = true;
@@ -327,17 +315,17 @@ $(document).ready(function () {
 	});
 
     function formatDatalist (datalist) {
-        var loading_markup = '<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Loading...';
+        var loading_markup = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Loading...';
         if (datalist.loading) {
             return loading_markup;
         }
 
-        var markup = "<div class='clearfix'>" ;
-        markup +="<div class='pull-left' style='padding-right: 10px;'>";
+        var markup = '<div class="clearfix">' ;
+        markup += '<div class="pull-left" style="padding-right: 10px;">';
         if (datalist.image) {
-            markup += "<div style='width: 30px;'><img src='" + datalist.image + "' style='max-height: 20px; max-width: 30px;'></div>";
+            markup += "<div style='width: 30px;'><img src='" + datalist.image + "' style='max-height: 20px; max-width: 30px;' alt='" +  datalist.text + "'></div>";
         } else {
-            markup += "<div style='height: 20px; width: 30px;'></div>";
+            markup += '<div style="height: 20px; width: 30px;"></div>';
         }
 
         markup += "</div><div>" + datalist.text + "</div>";
@@ -345,8 +333,71 @@ $(document).ready(function () {
         return markup;
     }
 
+    function formatDatalistSafe(datalist) {
+        // console.warn("What in the hell is going on with Select2?!?!!?!?");
+        // console.warn($.select2);
+        if (datalist.loading) {
+            return $('<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Loading...');
+        }
+
+        var root_div = $("<div class='clearfix'>") ;
+        var left_pull = $("<div class='pull-left' style='padding-right: 10px;'>");
+        if (datalist.image) {
+            var inner_div = $("<div style='width: 30px;'>");
+            /******************************************************************
+             * 
+             * We are specifically chosing empty alt-text below, because this 
+             * image conveys no additional information, relative to the text
+             * that will *always* be there in any select2 list that is in use
+             * in Snipe-IT. If that changes, we would probably want to change
+             * some signatures of some functions, but right now, we don't want
+             * screen readers to say "HP SuperJet 5000, .... picture of HP 
+             * SuperJet 5000..." and so on, for every single row in a list of
+             * assets or models or whatever.
+             * 
+             *******************************************************************/
+            var img = $("<img src='' style='max-height: 20px; max-width: 30px;' alt=''>");
+            // console.warn("Img is: ");
+            // console.dir(img);
+            // console.warn("Strigularly, that's: ");
+            // console.log(img);
+            img.attr("src", datalist.image );
+            inner_div.append(img)
+        } else {
+            var inner_div=$("<div style='height: 20px; width: 30px;'></div>");
+        }
+        left_pull.append(inner_div);
+        root_div.append(left_pull);
+        var name_div = $("<div>");
+        name_div.text(datalist.text);
+        root_div.append(name_div)
+        var safe_html = root_div.get(0).outerHTML;
+        var old_html = formatDatalist(datalist);
+        if(safe_html != old_html) {
+            //console.log("HTML MISMATCH: ");
+            //console.log("FormatDatalistSafe: ");
+            // console.dir(root_div.get(0));
+            //console.log(safe_html);
+            //console.log("FormatDataList: ");
+            //console.log(old_html);
+        }
+        return root_div;
+
+    }
+
     function formatDataSelection (datalist) {
-        return datalist.text;
+        // This a heinous workaround for a known bug in Select2.
+        // Without this, the rich selectlists are vulnerable to XSS.
+        // Many thanks to @uberbrady for this fix. It ain't pretty,
+        // but it resolves the issue until Select2 addresses it on their end.
+        //
+        // Bug was reported in 2016 :{
+        // https://github.com/select2/select2/issues/4587
+
+        return datalist.text.replace(/>/g, '&gt;')
+            .replace(/</g, '&lt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
     // This handles the radio button selectors for the checkout-to-foo options
@@ -363,12 +414,18 @@ $(document).ready(function () {
                 $('#assigned_location').hide();
                 $('.notification-callout').fadeOut();
 
+                $('[name="assigned_location"]').val('').trigger('change.select2');
+                $('[name="assigned_user"]').val('').trigger('change.select2');
+
             } else if (assignto_type == 'location') {
                 $('#current_assets_box').fadeOut();
                 $('#assigned_asset').hide();
                 $('#assigned_user').hide();
                 $('#assigned_location').show();
                 $('.notification-callout').fadeOut();
+
+                $('[name="assigned_asset"]').val('').trigger('change.select2');
+                $('[name="assigned_user"]').val('').trigger('change.select2');
             } else  {
 
                 $('#assigned_asset').hide();
@@ -379,6 +436,8 @@ $(document).ready(function () {
                 }
                 $('.notification-callout').fadeIn();
 
+                $('[name="assigned_asset"]').val('').trigger('change.select2');
+                $('[name="assigned_location"]').val('').trigger('change.select2');
             }
         });
     });
@@ -418,11 +477,11 @@ $(document).ready(function () {
 
 
     // Image preview
-    function readURL(input) {
+    function readURL(input, $preview) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                $('#imagePreview').attr('src', e.target.result);
+                $preview.attr('src', e.target.result);
             };
             reader.readAsDataURL(input.files[0]);
         }
@@ -436,31 +495,105 @@ $(document).ready(function () {
     }
 
      // File size validation
-    $('#uploadFile').bind('change', function() {
-        $('#upload-file-status').removeClass('text-success').removeClass('text-danger');
-        $('.goodfile').remove();
-        $('.badfile').remove();
-        $('.badfile').remove();
-        $('.previewSize').hide();
-        $('#upload-file-info').html('');
+    $('.js-uploadFile').bind('change', function() {
+        var $this = $(this);
+        var id = '#' + $this.attr('id');
+        var status = id + '-status';
+        var $status = $(status);
+        var delete_id = $(id + '-deleteCheckbox');
+        var preview_container = $(id + '-previewContainer');
 
-        var max_size = $('#uploadFile').data('maxsize');
+
+
+        $status.removeClass('text-success').removeClass('text-danger');
+        $(status + ' .goodfile').remove();
+        $(status + ' .badfile').remove();
+        $(status + ' .previewSize').hide();
+        preview_container.hide();
+        $(id + '-info').html('');
+
+        var max_size = $this.data('maxsize');
         var total_size = 0;
 
         for (var i = 0; i < this.files.length; i++) {
             total_size += this.files[i].size;
-            $('#upload-file-info').append('<span class="label label-default">' + this.files[i].name + ' (' + formatBytes(this.files[i].size) + ')</span> ');
+            $(id + '-info').append('<span class="label label-default">' + htmlEntities(this.files[i].name) + ' (' + formatBytes(this.files[i].size) + ')</span> ');
         }
 
         if (total_size > max_size) {
-            $('#upload-file-status').addClass('text-danger').removeClass('help-block').prepend('<i class="badfile fa fa-times"></i> ').append('<span class="previewSize"> Upload is ' + formatBytes(total_size) + '.</span>');
+            $status.addClass('text-danger').removeClass('help-block').prepend('<i class="badfile fas fa-times"></i> ').append('<span class="previewSize"> Upload is ' + formatBytes(total_size) + '.</span>');
         } else {
-            $('#upload-file-status').addClass('text-success').removeClass('help-block').prepend('<i class="goodfile fa fa-check"></i> ');
-            readURL(this);
-            $('#imagePreview').fadeIn();
+            $status.addClass('text-success').removeClass('help-block').prepend('<i class="goodfile fas fa-check"></i> ');
+            var $preview =  $(id + '-imagePreview');
+            readURL(this, $preview);
+            $preview.fadeIn();
+            preview_container.fadeIn();
+            delete_id.hide();
         }
 
 
     });
 
+});
+
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+
+
+/**
+ * Toggle disabled
+ */
+(function($){
+		
+    $.fn.toggleDisabled = function(callback){
+        return this.each(function(){
+            var disabled, $this = $(this);
+            if($this.attr('disabled')){
+                $this.removeAttr('disabled');
+                disabled = false;
+            } else {
+                $this.attr('disabled', 'disabled');
+                disabled = true;
+            }
+
+            if(callback && typeof callback === 'function'){
+                callback(this, disabled);
+            }
+        });
+    };
+    
+})(jQuery);
+
+/**
+ * Universal Livewire Select2 integration
+ *
+ * How to use:
+ *
+ * 1. Set the class of your select2 elements to 'livewire-select2').
+ * 2. Name your element to match a property in your Livewire component
+ * 3. Add an attribute called 'data-livewire-component' that points to $this->getId() (via `{{ }}` if you're in a blade,
+ *    or just $this->getId() if not).
+ */
+document.addEventListener('livewire:init', () => {
+    $('.livewire-select2').select2()
+
+    $(document).on('select2:select', '.livewire-select2', function (event) {
+        var target = $(event.target)
+        if(!event.target.name || !target.data('livewire-component')) {
+            console.error("You need to set both name (which should match a Livewire property) and data-livewire-component on your Livewire-ed select2 elements!")
+            console.error("For data-livewire-component, you probably want to use $this->getId() or {{ $this->getId() }}, as appropriate")
+            return false
+        }
+        Livewire.find(target.data('livewire-component')).set(event.target.name, this.options[this.selectedIndex].value)
+    });
+
+    Livewire.hook('request', ({succeed}) => {
+        succeed(() => {
+            queueMicrotask(() => {
+                $('.livewire-select2').select2();
+            });
+        });
+    });
 });

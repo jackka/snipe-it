@@ -51,22 +51,28 @@
                             <tr>
                                 <td>{{ is_null($license->company) ? '' : $license->company->name }}</td>
                                 <td>{{ $license->name }}</td>
-                                <td>{{ mb_strimwidth($license->serial, 0, 50, "...") }}</td>
+                                <td>
+                                    @can('viewKeys', $license)
+                                        {{ $license->serial }}
+                                    @else
+                                        ------------
+                                    @endcan
+                                </td>
                                 <td>{{ $license->seats }}</td>
                                 <td>{{ $license->remaincount() }}</td>
                                 <td>{{ $license->expiration_date }}</td>
                                 <td>{{ $license->purchase_date }}</td>
                                 <td class="text-right">
-                                    {{ $snipeSettings->default_currency }}{{ \App\Helpers\Helper::formatCurrencyOutput($license->purchase_cost) }}
+                                    {{ $snipeSettings->default_currency }}{{ Helper::formatCurrencyOutput($license->purchase_cost) }}
                                 </td>
                                 <td>
                                     {{ ($license->depreciation) ? e($license->depreciation->name).' ('.$license->depreciation->months.' '.trans('general.months').')' : ''  }}
                                 </td>
                                 <td class="text-right">
-                                    {{ $snipeSettings->default_currency }}{{ \App\Helpers\Helper::formatCurrencyOutput($license->getDepreciatedValue()) }}
+                                    {{ $snipeSettings->default_currency }}{{ Helper::formatCurrencyOutput($license->getDepreciatedValue()) }}
                                 </td>
                                 <td class="text-right">
-                                    -{{ $snipeSettings->default_currency }}{{ \App\Helpers\Helper::formatCurrencyOutput(($license->purchase_cost - $license->getDepreciatedValue())) }}
+                                    -{{ $snipeSettings->default_currency }}{{ Helper::formatCurrencyOutput(($license->purchase_cost - $license->getDepreciatedValue())) }}
                                 </td>
                             </tr>
                             @endforeach

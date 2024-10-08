@@ -1,8 +1,8 @@
 <?php
 
 return array(
-    'about_licenses_title'            => 'Om licenser',
-    'about_licenses'                  => 'Licenser används för att spåra programvara. De har ett visst antal platser som kan checkas ut till individer',
+    'about_licenses_title'      => 'Om licenser',
+    'about_licenses'            => 'Licenser används för att spåra programvara. De har ett visst antal platser som kan checkas ut till individer',
     'checkin'  					=> 'Checkin License Seat',
     'checkout_history'  		=> 'Checkout historia',
     'checkout'  				=> 'Checkout License Seat',
@@ -14,8 +14,39 @@ return array(
     'info'  					=> 'Licensinfo',
     'license_seats'  			=> 'Licenssäten',
     'seat'  					=> 'Sittplats',
+    'seat_count'  				=> 'Seat :count',
     'seats'  					=> 'Säten',
     'software_licenses'  		=> 'Programvarulicenser',
     'user'  					=> 'Användare',
     'view'  					=> 'Visa licens',
+    'delete_disabled'           => 'Licensen kan inte tas bort ännu eftersom vissa platser fortfarande är utcheckade.',
+    'bulk'                      =>
+        [
+            'checkin_all'           => [
+                'button'            => 'Checka in alla platser',
+                'modal'             => 'This action will checkin one seat. | This action will checkin all :checkedout_seats_count seats for this license.',
+                'enabled_tooltip'   => 'Checka in ALLA platser för denna licens från både användare och tillgångar',
+                'disabled_tooltip'  => 'Detta är inaktiverat eftersom det för närvarande inte finns några platser utcheckade',
+                'disabled_tooltip_reassignable'  => 'Detta är inaktiverat eftersom licensen inte är omtilldelbar',
+                'success'           => 'Licensen har checkats in! | Alla licenser har checkats in!',
+                'log_msg'           => 'Checked in via bulk license checkin in license GUI',
+            ],
+
+            'checkout_all'              => [
+                'button'                => 'Checka ut alla platser',
+                'modal'                 => 'Denna åtgärd kommer att checka ut en plats till den första tillgängliga användaren. | Den här åtgärden kommer att checka ut alla :available_seats_count platser till de första tillgängliga användarna. En användare anses vara tillgänglig för denna plats om de inte redan har denna licens checkas ut till dem, och auto-tilldela licensegenskapen är aktiverad på deras användarkonto.',
+                'enabled_tooltip'   => 'Checka ut alla platser (eller så många som finns tillgängliga) till ALLA användare',
+                'disabled_tooltip'  => 'Detta är inaktiverat eftersom det för närvarande inte finns några platser tillgängliga',
+                'success'           => 'Licensen har checkats ut! | :count licenser har checkats ut!',
+                'error_no_seats'    => 'Det finns inga återstående platser kvar för denna licens.',
+                'warn_not_enough_seats'    => ':count användare tilldelades denna licens, men vi fick slut på tillgängliga licenser.',
+                'warn_no_avail_users'    => 'Inget att göra. Det finns inga användare som inte redan har denna licens tilldelad dem.',
+                'log_msg'           => 'Checkade ut via bulk licens checkout i licens GUI',
+
+
+            ],
+    ],
+
+    'below_threshold' => 'Det finns bara :remaining_count platser kvar för denna licens med en minsta mängd :min_amt. Du kanske vill överväga att köpa fler platser.',
+    'below_threshold_short' => 'Detta objekt är under det minsta obligatoriska antalet.',
 );

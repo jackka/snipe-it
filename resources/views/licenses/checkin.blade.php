@@ -17,12 +17,12 @@
     <div class="row">
         <!-- left column -->
         <div class="col-md-7">
-            <form class="form-horizontal" method="post" action="{{ route('licenses.checkin.save', $licenseSeat->id) }}" autocomplete="off">
+            <form class="form-horizontal" method="post" action="{{ route('licenses.checkin.save', ['licenseId'=>$licenseSeat->id, 'backTo'=>$backto] ) }}" autocomplete="off">
                 {{csrf_field()}}
 
                 <div class="box box-default">
                     <div class="box-header with-border">
-                        <h3 class="box-title"> {{ $licenseSeat->license->name }}</h3>
+                        <h2 class="box-title"> {{ $licenseSeat->license->name }}</h2>
                     </div>
                     <div class="box-body">
 
@@ -36,24 +36,34 @@
 
             <!-- Serial -->
             <div class="form-group">
-                <label class="col-sm-2 control-label">{{ trans('admin/hardware/form.serial') }}</label>
+                <label class="col-sm-2 control-label">{{ trans('admin/licenses/form.license_key') }}</label>
                 <div class="col-md-6">
-                    <p class="form-control-static">{{ $licenseSeat->license->serial }}</p>
+                    <p class="form-control-static">
+                        @can('viewKeys', $licenseSeat->license)
+                            {{ $licenseSeat->license->serial }}
+                        @else
+                            ------------
+                        @endcan
+                        </p>
                 </div>
             </div>
 
             <!-- Note -->
-            <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
+            <div class="form-group {{ $errors->has('notes') ? 'error' : '' }}">
                 <label for="note" class="col-md-2 control-label">{{ trans('admin/hardware/form.notes') }}</label>
                 <div class="col-md-7">
-                    <textarea class="col-md-6 form-control" id="note" name="note">{{ Input::old('note', $licenseSeat->note) }}</textarea>
-                    {!! $errors->first('note', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
+                    <textarea class="col-md-6 form-control" id="notes" name="notes"></textarea>
+                    {!! $errors->first('notes', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
             </div>
-                        <div class="box-footer">
-                            <a class="btn btn-link" href="{{ route('licenses.index') }}">{{ trans('button.cancel') }}</a>
-                            <button type="submit" class="btn btn-success pull-right"><i class="fa fa-check icon-white"></i> {{ trans('general.checkin') }}</button>
-                        </div>
+                        <x-redirect_submit_options
+                                index_route="licenses.index"
+                                :button_label="trans('general.checkin')"
+                                :options="[
+                                'index' => trans('admin/hardware/form.redirect_to_all', ['type' => trans('general.licenses')]),
+                                'item' => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.license')]),
+                               ]"
+                        />
                     </div> <!-- /.box-->
             </form>
         </div> <!-- /.col-md-7-->

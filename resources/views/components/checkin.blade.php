@@ -2,7 +2,7 @@
 
 {{-- Page title --}}
 @section('title')
-    {{ trans('admin/licenses/general.checkin') }}
+    {{ trans('admin/components/general.checkin') }}
     @parent
 @stop
 
@@ -17,12 +17,12 @@
     <div class="row">
         <!-- left column -->
         <div class="col-md-7">
-            <form class="form-horizontal" method="post" action="{{ route('component.checkin.save', $component_assets->id) }}" autocomplete="off">
+            <form class="form-horizontal" method="post" action="{{ route('components.checkin.store', [$component_assets->id, 'backto' => 'asset']) }}" autocomplete="off">
                 {{csrf_field()}}
 
                 <div class="box box-default">
                     <div class="box-header with-border">
-                        <h3 class="box-title"> {{ $component->name }}</h3>
+                        <h2 class="box-title"> {{ $component->name }}</h2>
                     </div>
                     <div class="box-body">
 
@@ -37,13 +37,13 @@
 
                         <!-- Qty -->
                         <div class="form-group {{ $errors->has('checkin_qty') ? 'error' : '' }}">
-                            <label for="note" class="col-md-2 control-label">{{ trans('general.qty') }}</label>
+                            <label for="checkin_qty" class="col-md-2 control-label">{{ trans('general.qty') }}</label>
                             <div class="col-md-3">
-                                <input type="text" class="form-control" name="checkin_qty" value="{{ Input::old('assigned_qty', $component_assets->assigned_qty) }}">
+                                <input type="text" class="form-control" name="checkin_qty" aria-label="checkin_qty" value="{{ old('assigned_qty', $component_assets->assigned_qty) }}">
                             </div>
                             <div class="col-md-9 col-md-offset-2">
-                            <p class="help-block">Must be {{ $component_assets->assigned_qty }} or less.</p>
-                            {!! $errors->first('checkin_qty', '<span class="alert-msg"><i class="fa fa-times"></i>
+                            <p class="help-block">{{ trans('admin/components/general.checkin_limit', ['assigned_qty' => $component_assets->assigned_qty]) }}</p>
+                            {!! $errors->first('checkin_qty', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i>
                             :message</span>') !!}
                             </div>
                         </div>
@@ -52,14 +52,18 @@
                         <div class="form-group {{ $errors->has('note') ? 'error' : '' }}">
                             <label for="note" class="col-md-2 control-label">{{ trans('admin/hardware/form.notes') }}</label>
                             <div class="col-md-7">
-                                <textarea class="col-md-6 form-control" id="note" name="note">{{ Input::old('note', $component->note) }}</textarea>
-                                {!! $errors->first('note', '<span class="alert-msg"><i class="fa fa-times"></i> :message</span>') !!}
+                                <textarea class="col-md-6 form-control" id="note" name="note">{{ old('note', $component->note) }}</textarea>
+                                {!! $errors->first('note', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
-                        <div class="box-footer">
-                            <a class="btn btn-link" href="{{ route('components.index') }}">{{ trans('button.cancel') }}</a>
-                            <button type="submit" class="btn btn-success pull-right"><i class="fa fa-check icon-white"></i> {{ trans('general.checkin') }}</button>
-                        </div>
+                        <x-redirect_submit_options
+                                index_route="components.index"
+                                :button_label="trans('general.checkin')"
+                                :options="[
+                                'index' => trans('admin/hardware/form.redirect_to_all', ['type' => trans('general.components')]),
+                                'item' => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.component')]),
+                               ]"
+                        />
                     </div> <!-- /.box-->
             </form>
         </div> <!-- /.col-md-7-->

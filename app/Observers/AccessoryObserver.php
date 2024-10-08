@@ -3,9 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Accessory;
-use App\Models\Setting;
 use App\Models\Actionlog;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class AccessoryObserver
 {
@@ -17,15 +16,13 @@ class AccessoryObserver
      */
     public function updated(Accessory $accessory)
     {
-
         $logAction = new Actionlog();
         $logAction->item_type = Accessory::class;
         $logAction->item_id = $accessory->id;
-        $logAction->created_at =  date("Y-m-d H:i:s");
-        $logAction->user_id = Auth::id();
+        $logAction->created_at = date('Y-m-d H:i:s');
+        $logAction->created_by = auth()->id();
         $logAction->logaction('update');
     }
-
 
     /**
      * Listen to the Accessory created event when
@@ -39,10 +36,12 @@ class AccessoryObserver
         $logAction = new Actionlog();
         $logAction->item_type = Accessory::class;
         $logAction->item_id = $accessory->id;
-        $logAction->created_at =  date("Y-m-d H:i:s");
-        $logAction->user_id = Auth::id();
+        $logAction->created_at = date('Y-m-d H:i:s');
+        $logAction->created_by = auth()->id();
+        if($accessory->imported) {
+            $logAction->setActionSource('importer');
+        }
         $logAction->logaction('create');
-
     }
 
     /**
@@ -56,8 +55,8 @@ class AccessoryObserver
         $logAction = new Actionlog();
         $logAction->item_type = Accessory::class;
         $logAction->item_id = $accessory->id;
-        $logAction->created_at =  date("Y-m-d H:i:s");
-        $logAction->user_id = Auth::id();
+        $logAction->created_at = date('Y-m-d H:i:s');
+        $logAction->created_by = auth()->id();
         $logAction->logaction('delete');
     }
 }

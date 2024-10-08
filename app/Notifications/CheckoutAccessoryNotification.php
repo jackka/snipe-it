@@ -4,14 +4,19 @@ namespace App\Notifications;
 
 use App\Models\Accessory;
 use App\Models\Setting;
-use App\Models\SnipeModel;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Mail;
+use NotificationChannels\GoogleChat\Card;
+use NotificationChannels\GoogleChat\GoogleChatChannel;
+use NotificationChannels\GoogleChat\GoogleChatMessage;
+use NotificationChannels\GoogleChat\Section;
+use NotificationChannels\GoogleChat\Widgets\KeyValue;
+use NotificationChannels\MicrosoftTeams\MicrosoftTeamsChannel;
+use NotificationChannels\MicrosoftTeams\MicrosoftTeamsMessage;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutAccessoryNotification extends Notification
 {
@@ -22,32 +27,36 @@ class CheckoutAccessoryNotification extends Notification
      */
     public function __construct(Accessory $accessory, $checkedOutTo, User $checkedOutBy, $acceptance, $note)
     {
-
         $this->item = $accessory;
         $this->admin = $checkedOutBy;
         $this->note = $note;
+        $this->checkout_qty = $accessory->checkout_qty;
         $this->target = $checkedOutTo;
         $this->acceptance = $acceptance;
-        
         $this->settings = Setting::getSettings();
-
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via()
     {
-
         $notifyBy = [];
+        if (Setting::getSettings()->webhook_selected == 'google' && Setting::getSettings()->webhook_endpoint) {
 
-        if (Setting::getSettings()->slack_endpoint!='') {
-            $notifyBy[] = 'slack';
+            $notifyBy[] = GoogleChatChannel::class;
         }
 
+        if (Setting::getSettings()->webhook_selected == 'microsoft' && Setting::getSettings()->webhook_endpoint) {
+
+            $notifyBy[] = MicrosoftTeamsChannel::class;
+        }
+
+        if (Setting::getSettings()->webhook_selected == 'slack' || Setting::getSettings()->webhook_selected == 'general' ) {
+            $notifyBy[] = 'slack';
+        }
 
         /**
          * Only send notifications to users that have email addresses
@@ -55,7 +64,7 @@ class CheckoutAccessoryNotification extends Notification
         if ($this->target instanceof User && $this->target->email != '') {
 
             /**
-             * Send an email if the asset requires acceptance, 
+             * Send an email if the asset requires acceptance,
              * so the user can accept or decline the asset
              */
             if ($this->item->requireAcceptance()) {
@@ -74,50 +83,96 @@ class CheckoutAccessoryNotification extends Notification
              */
             if ($this->item->checkin_email()) {
                 $notifyBy[1] = 'mail';
-            }            
-
+            }
         }
 
         return $notifyBy;
     }
 
-    public function toSlack($notifiable)
+    public function toSlack()
     {
-
-
         $target = $this->target;
         $admin = $this->admin;
         $item = $this->item;
         $note = $this->note;
-        $botname = ($this->settings->slack_botname) ? $this->settings->slack_botname : 'Snipe-Bot' ;
+        $botname = ($this->settings->webhook_botname) ? $this->settings->webhook_botname : 'Snipe-Bot';
+        $channel = ($this->settings->webhook_channel) ? $this->settings->webhook_channel : '';
 
         $fields = [
             'To' => '<'.$target->present()->viewUrl().'|'.$target->present()->fullName().'>',
             'By' => '<'.$admin->present()->viewUrl().'|'.$admin->present()->fullName().'>',
         ];
 
-
-
         return (new SlackMessage)
             ->content(':arrow_up: :keyboard: Accessory Checked Out')
             ->from($botname)
+            ->to($channel)
             ->attachment(function ($attachment) use ($item, $note, $admin, $fields) {
-                $attachment->title(htmlspecialchars_decode($item->present()->name), $item->present()->viewUrl())
+                $attachment->title(htmlspecialchars_decode($this->checkout_qty.' x '.$item->present()->name), $item->present()->viewUrl())
                     ->fields($fields)
                     ->content($note);
             });
     }
+    public function toMicrosoftTeams()
+    {
+        $target = $this->target;
+        $admin = $this->admin;
+        $item = $this->item;
+        $note = $this->note;
+
+            return MicrosoftTeamsMessage::create()
+                ->to($this->settings->webhook_endpoint)
+                ->type('success')
+                ->addStartGroupToSection('activityTitle')
+                ->title(trans('mail.Accessory_Checkout_Notification'))
+                ->addStartGroupToSection('activityText')
+                ->fact(htmlspecialchars_decode($item->present()->name), '', 'activityTitle')
+                ->fact(trans('mail.assigned_to'), $target->present()->name)
+                ->fact(trans('general.qty'), $this->checkout_qty)
+                ->fact(trans('mail.checkedout_from'), $item->location->name ? $item->location->name : '')
+                ->fact(trans('mail.Accessory_Checkout_Notification') . " by ", $admin->present()->fullName())
+                ->fact(trans('admin/consumables/general.remaining'), $item->numRemaining())
+                ->fact(trans('mail.notes'), $note ?: '');
+
+    }
+    public function toGoogleChat()
+    {
+        $target = $this->target;
+        $item = $this->item;
+        $note = $this->note;
+
+        return GoogleChatMessage::create()
+            ->to($this->settings->webhook_endpoint)
+            ->card(
+                Card::create()
+                    ->header(
+                        '<strong>'.trans('mail.Accessory_Checkout_Notification').'</strong>' ?: '',
+                        htmlspecialchars_decode($item->present()->name) ?: '',
+                    )
+                    ->section(
+                        Section::create(
+                            KeyValue::create(
+                                trans('mail.assigned_to') ?: '',
+                                $target->present()->name ?: '',
+                                trans('admin/consumables/general.remaining').": ". $item->numRemaining(),
+                            )
+                                ->onClick(route('users.show', $target->id))
+                        )
+                    )
+            );
+
+    }
+
+
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail()
     {
-
-        \Log::debug($this->item->getImageUrl());
-        $eula =  $this->item->getEula();
+        Log::debug($this->item->getImageUrl());
+        $eula = $this->item->getEula();
         $req_accept = $this->item->requireAcceptance();
 
         $accept_url = is_null($this->acceptance) ? null : route('account.accept.item', $this->acceptance);
@@ -131,21 +186,8 @@ class CheckoutAccessoryNotification extends Notification
                 'eula'          => $eula,
                 'req_accept'    => $req_accept,
                 'accept_url'    => $accept_url,
+                'checkout_qty'  => $this->checkout_qty,
             ])
             ->subject(trans('mail.Confirm_accessory_delivery'));
-
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
     }
 }

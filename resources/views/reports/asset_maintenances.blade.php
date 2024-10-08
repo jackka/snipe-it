@@ -35,9 +35,10 @@
                         }'>
                 <thead>
                 <tr>
-                    <th data-field="company" data-sortable="false" data-visible="false">{{ trans('admin/companies/table.title') }}</th>
+                    <th data-field="company" data-sortable="false" data-visible="false" data-formatter="companiesLinkObjFormatter">{{ trans('admin/companies/table.title') }}</th>
                     <th data-sortable="true" data-field="id" data-visible="false">{{ trans('general.id') }}</th>
-                    <th data-sortable="false" data-field="asset_name" data-formatter="hardwareLinkObjFormatter">{{ trans('admin/asset_maintenances/table.asset_name') }}</th>
+                    <th data-sortable="true" data-field="asset_tag" data-formatter="assetTagLinkFormatter" data-visible="false">{{ trans('general.asset_tag') }}</th>
+                    <th data-sortable="false" data-field="asset_name" data-formatter="assetNameLinkFormatter">{{ trans('admin/asset_maintenances/table.asset_name') }}</th>
                     <th data-sortable="false" data-field="supplier" data-formatter="suppliersLinkObjFormatter">{{ trans('general.supplier') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="asset_maintenance_type">{{ trans('admin/asset_maintenances/form.asset_maintenance_type') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="title">{{ trans('admin/asset_maintenances/form.title') }}</th>
@@ -45,6 +46,9 @@
                     <th data-searchable="true" data-sortable="true" data-field="completion_date" data-formatter="dateDisplayFormatter">{{ trans('admin/asset_maintenances/form.completion_date') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="asset_maintenance_time">{{ trans('admin/asset_maintenances/form.asset_maintenance_time') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="cost" class="text-right" data-footer-formatter="sumFormatter">{{ trans('admin/asset_maintenances/form.cost') }}</th>
+                    <th data-sortable="true" data-field="location" data-formatter="deployedLocationFormatter" data-visible="false">{{ trans('general.location') }}</th>
+                    <th data-sortable="true" data-field="rtd_location" data-formatter="deployedLocationFormatter" data-visible="false">{{ trans('admin/hardware/form.default_location') }}</th>
+                    <th data-searchable="true" data-sortable="true" data-field="is_warranty" data-formatter="trueFalseFormatter">{{ trans('admin/asset_maintenances/table.is_warranty') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="user_id" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
                     <th data-searchable="true" data-sortable="true" data-field="notes" data-visible="false">{{ trans('admin/asset_maintenances/form.notes') }}</th>
                 </tr>

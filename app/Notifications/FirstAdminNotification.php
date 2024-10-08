@@ -3,15 +3,14 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class FirstAdminNotification extends Notification
 {
     use Queueable;
 
-    private $_data = array();
+    private $_data = [];
 
     /**
      * Create a new notification instance.
@@ -25,16 +24,15 @@ class FirstAdminNotification extends Notification
         $this->_data['last_name'] = $content['last_name'];
         $this->_data['username'] = $content['username'];
         $this->_data['password'] = $content['password'];
-        $this->_data['url'] = url('/');
+        $this->_data['url'] = config('app.url');
     }
 
     /**
      * Get the notification's delivery channels.
      *
-     * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via()
     {
         return ['mail'];
     }
@@ -42,26 +40,12 @@ class FirstAdminNotification extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail()
     {
         return (new MailMessage)
-            ->subject(trans('mail.welcome', ['name' => $this->_data['first_name'] . ' ' . $this->_data['last_name'] ]))
+            ->subject(trans('mail.welcome', ['name' => $this->_data['first_name'].' '.$this->_data['last_name']]))
             ->markdown('notifications.FirstAdmin', $this->_data);
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
     }
 }

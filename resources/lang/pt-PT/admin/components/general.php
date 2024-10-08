@@ -1,8 +1,6 @@
 <?php
 
 return array(
-    'about_components_title' 			=> 'Sobre componentes',
-    'about_components_text'  			=> 'Componentes são itens que fazem parte de artigos, como por exemplo HDD, RAM, etc.',
     'component_name'                  => 'Nome do Componente',
     'checkin'                             => 'Devolução do componente',
     'checkout'                             => 'Atribuição de componente',
@@ -14,4 +12,5 @@ return array(
     'remaining' 			             => 'Restantes',
     'total' 			                 => 'Total',
     'update'                            => 'Atualizar componente',
+    'checkin_limit'            => 'Número recebido deve ser igual ou menor que :assigned_qty'
 );

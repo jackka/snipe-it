@@ -1,32 +1,32 @@
 <?php
 
-return array(
+return [
 
-    'does_not_exist' => 'Status Label does not exist.',
-    'assoc_assets'	 => 'This Status Label is currently associated with at least one Asset and cannot be deleted. Please update your assets to no longer reference this status and try again. ',
+    'does_not_exist' => 'Oznaka statusa ne postoji.',
+    'deleted_label' => 'Nalepnica obrisanog statusa',
+    'assoc_assets'	 => 'Oznaka statusa je trenutno povezana s barem jednim resursom i ne može se izbrisati. Ažurirajte resurs da se više ne referencira na tu oznaku statusa i pokušajte ponovno. ',
 
+    'create' => [
+        'error'   => 'Oznaka statusa nije kreirana, pokušajte ponovo.',
+        'success' => 'Oznaka statusa je uspešno kreirana.',
+    ],
 
-    'create' => array(
-        'error'   => 'Status Label was not created, please try again.',
-        'success' => 'Status Label created successfully.'
-    ),
+    'update' => [
+        'error'   => 'Oznaka statusa nije ažurirana, pokušajte ponovo',
+        'success' => 'Oznaka statusa je uspešno ažurirana.',
+    ],
 
-    'update' => array(
-        'error'   => 'Status Label was not updated, please try again',
-        'success' => 'Status Label updated successfully.'
-    ),
+    'delete' => [
+        'confirm'   => 'Jeste li sigurni da želite da izbrišete ovu oznaku statusa?',
+        'error'   => 'Došlo je do problema sa brisanjem oznake statusa. Molim pokušajte ponovo.',
+        'success' => 'Oznaka statusa je uspešno izbrisana.',
+    ],
 
-    'delete' => array(
-        'confirm'   => 'Are you sure you wish to delete this Status Label?',
-        'error'   => 'There was an issue deleting the Status Label. Please try again.',
-        'success' => 'The Status Label was deleted successfully.'
-    ),
-
-    'help' => array(
-        'undeployable'   => 'These assets cannot be assigned to anyone.',
-        'deployable'   => 'These assets can be checked out. Once they are assigned, they will assume a meta status of <i class="fa fa-circle text-blue"></i> <strong>Deployed</strong>.',
+    'help' => [
+        'undeployable'   => 'Ova imovina ne može biti dodeljena nikome.',
+        'deployable'   => 'Ova sredstva se mogu odjaviti. Nakon dodeljivanja, preuzimaju meta status <i class="fas fa-circle text-blue"></i> <strong>Raspoređeno</strong>.',
         'archived'   => 'These assets cannot be checked out, and will only show up in the Archived view. This is useful for retaining information about assets for budgeting/historic purposes but keeping them out of the day-to-day asset list.',
         'pending'   => 'These assets can not yet be assigned to anyone, often used for items that are out for repair, but are expected to return to circulation.',
-    ),
+    ],
 
-);
+];

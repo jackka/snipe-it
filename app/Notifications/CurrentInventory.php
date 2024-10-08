@@ -3,9 +3,8 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class CurrentInventory extends Notification
 {
@@ -27,7 +26,7 @@ class CurrentInventory extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via()
     {
         return ['mail'];
     }
@@ -35,32 +34,19 @@ class CurrentInventory extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail()
     {
         $message = (new MailMessage)->markdown('notifications.markdown.user-inventory',
             [
                 'assets'  => $this->user->assets,
                 'accessories'  => $this->user->accessories,
                 'licenses'  => $this->user->licenses,
+                'consumables'  => $this->user->consumables,
             ])
-            ->subject('Inventory Report');
+            ->subject(trans('mail.inventory_report'));
 
         return $message;
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
     }
 }

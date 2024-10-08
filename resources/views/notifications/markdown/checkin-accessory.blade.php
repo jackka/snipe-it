@@ -3,7 +3,7 @@
 
 {{ trans('mail.the_following_item') }}
 
-@if ($item->getImageUrl())
+@if (($snipeSettings->show_images_in_email =='1') && $item->getImageUrl())
 <center><img src="{{ $item->getImageUrl() }}" alt="Asset" style="max-width: 570px;"></center>
 @endif
 
@@ -11,7 +11,6 @@
 |        |          |
 | ------------- | ------------- |
 | **{{ trans('mail.asset_name') }}** | {{ $item->name }} |
-| **{{ trans('mail.asset_tag') }}** | {{ $item->asset_tag }} |
 @if (isset($item->manufacturer))
 | **{{ trans('general.manufacturer') }}** | {{ $item->manufacturer->name }} |
 @endif
@@ -26,7 +25,7 @@
 @endif
 @endcomponent
 
-Thanks,
+{{ trans('mail.best_regards') }}
 
 {{ $snipeSettings->site_name }}
 

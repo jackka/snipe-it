@@ -1,14 +1,14 @@
 <?php
 
     return [
-        'asset_maintenance_type' => 'Maintenance Type',
-        'title'                  => 'Title',
-        'start_date'             => 'Started',
-        'completion_date'        => 'Completed',
-        'cost'                   => 'Cost',
-        'is_warranty'            => 'Warranty Improvement',
-        'asset_maintenance_time' => 'Days',
-        'notes'                  => 'Notes',
-        'update'                 => 'Update',
-        'create'                 => 'Create'
+        'asset_maintenance_type' => 'Tip održavanja imovine',
+        'title'                  => 'Naslov',
+        'start_date'             => 'Datum početka',
+        'completion_date'        => 'Datum završetka',
+        'cost'                   => 'Cena',
+        'is_warranty'            => 'Poboljšanje garancije',
+        'asset_maintenance_time' => 'Vreme trajanja održavanja opreme (koliko dana)',
+        'notes'                  => 'Zabeleške',
+        'update'                 => 'Dopuna održavanja opreme',
+        'create'                 => 'Napravite zahtev za održavanje opreme'
     ];

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Transformers\CompaniesTransformer;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Helpers\Helper;
-use App\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Http\Transformers\CompaniesTransformer;
 use App\Http\Transformers\SelectlistTransformer;
+use App\Models\Company;
+use Illuminate\Http\Request;
+use App\Http\Requests\ImageUploadRequest;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class CompaniesController extends Controller
 {
@@ -16,15 +19,17 @@ class CompaniesController extends Controller
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0]
-     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request) : JsonResponse | array
     {
         $this->authorize('view', Company::class);
 
         $allowed_columns = [
             'id',
             'name',
+            'phone',
+            'fax',
+            'email',
             'created_at',
             'updated_at',
             'users_count',
@@ -35,19 +40,45 @@ class CompaniesController extends Controller
             'components_count',
         ];
 
-        $companies = Company::withCount('assets as assets_count','licenses as licenses_count','accessories as accessories_count','consumables as consumables_count','components as components_count','users as users_count');
+        $companies = Company::withCount(['assets as assets_count'  => function ($query) {
+            $query->AssetsForShow();
+        }])->withCount('assets as assets_count', 'licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count');
 
         if ($request->filled('search')) {
             $companies->TextSearch($request->input('search'));
         }
 
-        $offset = $request->input('offset', 0);
-        $limit = $request->input('limit', 50);
+        if ($request->filled('name')) {
+            $companies->where('name', '=', $request->input('name'));
+        }
+
+		if ($request->filled('email')) {
+            $companies->where('email', '=', $request->input('email'));
+        }
+
+        if ($request->filled('created_by')) {
+            $companies->where('created_by', '=', $request->input('created_by'));
+        }
+
+
+        // Make sure the offset and limit are actually integers and do not exceed system limits
+        $offset = ($request->input('offset') > $companies->count()) ? $companies->count() : app('api_offset_value');
+        $limit = app('api_limit_value');
         $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
-        $sort = in_array($request->input('sort'), $allowed_columns) ? $request->input('sort') : 'created_at';
-        $companies->orderBy($sort, $order);
+        $sort_override =  $request->input('sort');
+        $column_sort = in_array($sort_override, $allowed_columns) ? $sort_override : 'created_at';
+
+        switch ($sort_override) {
+            case 'created_by':
+                $companies = $companies->OrderByCreatedBy($order);
+                break;
+            default:
+                $companies = $companies->orderBy($column_sort, $order);
+                break;
+        }
 
         $total = $companies->count();
+
         $companies = $companies->skip($offset)->take($limit)->get();
         return (new CompaniesTransformer)->transformCompanies($companies, $total);
 
@@ -59,21 +90,21 @@ class CompaniesController extends Controller
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0]
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \App\Http\Requests\ImageUploadRequest $request
      */
-    public function store(Request $request)
+    public function store(ImageUploadRequest $request) : JsonResponse
     {
         $this->authorize('create', Company::class);
         $company = new Company;
         $company->fill($request->all());
-
+        $company = $request->handleImages($company);
+        
         if ($company->save()) {
             return response()->json(Helper::formatStandardApiResponse('success', (new CompaniesTransformer)->transformCompany($company), trans('admin/companies/message.create.success')));
         }
+
         return response()
             ->json(Helper::formatStandardApiResponse('error', null, $company->getErrors()));
-
     }
 
     /**
@@ -82,9 +113,8 @@ class CompaniesController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0]
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id) : array
     {
         $this->authorize('view', Company::class);
         $company = Company::findOrFail($id);
@@ -98,15 +128,15 @@ class CompaniesController extends Controller
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0]
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\ImageUploadRequest  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ImageUploadRequest $request, $id) : JsonResponse
     {
         $this->authorize('update', Company::class);
         $company = Company::findOrFail($id);
         $company->fill($request->all());
+        $company = $request->handleImages($company);
 
         if ($company->save()) {
             return response()
@@ -123,32 +153,21 @@ class CompaniesController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0]
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id) : JsonResponse
     {
-       $this->authorize('delete', Company::class);
-       $company = Company::findOrFail($id);
-            $this->authorize('delete', $company);
+        $this->authorize('delete', Company::class);
+        $company = Company::findOrFail($id);
+        $this->authorize('delete', $company);
 
-        try {
-            $company->delete();
+        if (! $company->isDeletable()) {
             return response()
-                ->json(Helper::formatStandardApiResponse('success', null,  trans('admin/companies/message.delete.success')));
-        } catch (\Illuminate\Database\QueryException $exception) {
-            /*
-                 * NOTE: This happens when there's a foreign key constraint violation
-                 * For example when rows in other tables are referencing this company
-                 */
-            if ($exception->getCode() == 23000) {
-                return response()
-                    ->json(Helper::formatStandardApiResponse('error', null,  trans('admin/companies/message.assoc_users')));
-
-            } else {
-                throw $exception;
-            }
+                    ->json(Helper::formatStandardApiResponse('error', null, trans('admin/companies/message.assoc_users')));
         }
+        $company->delete();
 
+        return response()
+            ->json(Helper::formatStandardApiResponse('success', null, trans('admin/companies/message.delete.success')));
     }
 
     /**
@@ -157,14 +176,14 @@ class CompaniesController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v4.0.16]
      * @see \App\Http\Transformers\SelectlistTransformer
-     *
      */
-    public function selectlist(Request $request)
+    public function selectlist(Request $request) : array
     {
-
+        $this->authorize('view.selectlists');
         $companies = Company::select([
             'companies.id',
             'companies.name',
+            'companies.email',
             'companies.image',
         ]);
 

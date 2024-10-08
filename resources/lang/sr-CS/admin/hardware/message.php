@@ -1,83 +1,96 @@
 <?php
 
-return array(
+return [
 
-    'undeployable' 		=> '<strong>Warning: </strong> This asset has been marked as currently undeployable.
-                        If this status has changed, please update the asset status.',
-    'does_not_exist' 	=> 'Asset does not exist.',
-    'does_not_exist_or_not_requestable' => 'Nice try. That asset does not exist or is not requestable.',
-    'assoc_users'	 	=> 'This asset is currently checked out to a user and cannot be deleted. Please check the asset in first, and then try deleting again. ',
+    'undeployable' 		=> '<strong>Upozorenje: </strong> Ova imovina je trenutno označena kao nezaduživa. Ukoliko je status drugačiji, molim vas ažurirajte status imovine.',
+    'does_not_exist' 	=> 'Imovina ne postoji.',
+    'does_not_exist_var'=> 'Nije pronađena imovina za oznakom :asset_tag.',
+    'no_tag' 	        => 'Nije navedena oznaka imovine.',
+    'does_not_exist_or_not_requestable' => 'Imovina ne postoji ili se ne može zatražiti.',
+    'assoc_users'	 	=> 'Ovaj je resurs trenutno poveren korisniku i ne može se izbrisati. Najprije proverite resurs, a zatim ponovo pokušajte brisanje. ',
+    'warning_audit_date_mismatch' 	=> 'Naredni datum popisa ove imovine (:next_audit_date) je pre poslednjeg datuma popisa (:last_audit_date). Molim vas izmenite datum narednog popisa.',
 
-    'create' => array(
-        'error'   		=> 'Asset was not created, please try again. :(',
-        'success' 		=> 'Asset created successfully. :)'
-    ),
+    'create' => [
+        'error'   		=> 'Imovina, resurs nije kreiran, pokušajte ponovo. :(',
+        'success' 		=> 'Imovina, resurs uspešno kreiran. :)',
+        'success_linked' => 'Imovina sa oznakom :tag je uspešno napravljena. <strong><a href=":link" style="color: white;">Kliknite ovde za pregled</a></strong>.',
+    ],
 
-    'update' => array(
-        'error'   			=> 'Asset was not updated, please try again',
-        'success' 			=> 'Asset updated successfully.',
-        'nothing_updated'	=>  'No fields were selected, so nothing was updated.',
-    ),
+    'update' => [
+        'error'   			=> 'Imovina nije ažurirana, pokušajte ponovo',
+        'success' 			=> 'Imovina je uspešno ažurirana.',
+        'encrypted_warning' => 'Imovina je uspešno izmenjena, ali enkriptovana prilagođena polja nisu zbog ovlašćenja',
+        'nothing_updated'	=>  'Nije odabrano nijedno polje, tako da ništa nije ažurirano.',
+        'no_assets_selected'  =>  'Nije odabrano nijedno polje, tako da ništa nije ažurirano.',
+        'assets_do_not_exist_or_are_invalid' => 'Izabrana imovina ne može biti izmenjena.',
+    ],
 
-    'restore' => array(
-        'error'   		=> 'Asset was not restored, please try again',
-        'success' 		=> 'Asset restored successfully.'
-    ),
+    'restore' => [
+        'error'   		=> 'Imovina nije obnovljena, pokušajte ponovo',
+        'success' 		=> 'Imovina je uspešno obnovljena.',
+        'bulk_success' 		=> 'Imovina je uspešno vraćena.',
+        'nothing_updated'   => 'Nijedna imovina nije izabrana, zato ništa nije vraćeno.', 
+    ],
 
-    'audit' => array(
-        'error'   		=> 'Asset audit was unsuccessful. Please try again.',
-        'success' 		=> 'Asset audit successfully logged.'
-    ),
-
-
-    'deletefile' => array(
-        'error'   => 'File not deleted. Please try again.',
-        'success' => 'File successfully deleted.',
-    ),
-
-    'upload' => array(
-        'error'   => 'File(s) not uploaded. Please try again.',
-        'success' => 'File(s) successfully uploaded.',
-        'nofiles' => 'You did not select any files for upload, or the file you are trying to upload is too large',
-        'invalidfiles' => 'One or more of your files is too large or is a filetype that is not allowed. Allowed filetypes are png, gif, jpg, doc, docx, pdf, and txt.',
-    ),
-
-    'import' => array(
-        'error'                 => 'Some items did not import correctly.',
-        'errorDetail'           => 'The following Items were not imported because of errors.',
-        'success'               => "Your file has been imported",
-        'file_delete_success'   => "Your file has been been successfully deleted",
-        'file_delete_error'      => "The file was unable to be deleted",
-    ),
+    'audit' => [
+        'error'   		=> 'Neuspešan popis imovine: :error ',
+        'success' 		=> 'Provera imovine uspešno je evidentirana.',
+    ],
 
 
-    'delete' => array(
-        'confirm'   	=> 'Are you sure you wish to delete this asset?',
-        'error'   		=> 'There was an issue deleting the asset. Please try again.',
-        'nothing_updated'   => 'No assets were selected, so nothing was deleted.',
-        'success' 		=> 'The asset was deleted successfully.'
-    ),
+    'deletefile' => [
+        'error'   => 'Fajl nije izbrisan. Molim pokušajte ponovo.',
+        'success' => 'Fajl uspešno obrisan.',
+    ],
 
-    'checkout' => array(
-        'error'   		=> 'Asset was not checked out, please try again',
-        'success' 		=> 'Asset checked out successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
+    'upload' => [
+        'error'   => 'Fajl(ovi) nisu preneseni. Pokušajte ponovo.',
+        'success' => 'Fajl(ovi) uspešno preneseni. Pokušajte ponovo.',
+        'nofiles' => 'Niste odabrali nijedan fajl za prenos ili je fajl prevelik',
+        'invalidfiles' => 'Jedn ili više fajlova su preveliki ili je vrsta fajla koja nije dopuštena. Dopuštene vrste su png, gif, jpg, doc, docx, pdf i txt.',
+    ],
+
+    'import' => [
+        'import_button'         => 'Izvrši uvoz',
+        'error'                 => 'Neke stavke nisu pravilno uvezene.',
+        'errorDetail'           => 'Sledeće stavke nisu uvezene zbog grešaka.',
+        'success'               => 'Vaš fajl je importovan',
+        'file_delete_success'   => 'Vaš je fajl uspešno izbrisan',
+        'file_delete_error'      => 'Fajl nime moguće izbrisati',
+        'file_missing' => 'Nedostaje izabrana datoteka',
+        'file_already_deleted' => 'Izabrana datoteka je već obrisana',
+        'header_row_has_malformed_characters' => 'Jedan ili više atributa u redu zaglavlja sadrži loše formatirane UTF-8 karaktere',
+        'content_row_has_malformed_characters' => 'Jedan ili više atributa u prvom redu sadržaja sadrži loše formatirane UTF-8 karaktere',
+    ],
+
+
+    'delete' => [
+        'confirm'   	=> 'Jeste li sigurni da želite izbrisati ovaj resurs?',
+        'error'   		=> 'Došlo je do problema s brisanjem resursa. Molim pokušajte ponovo.',
+        'nothing_updated'   => 'Nijedna imovina nije odabrana, tako da ništa nije izbrisano.',
+        'success' 		=> 'Imovina je uspešno obrisana.',
+    ],
+
+    'checkout' => [
+        'error'   		=> 'Imovina nije odjavljena, pokušajte ponovo',
+        'success' 		=> 'Imovina je uspešno odjavljena.',
+        'user_does_not_exist' => 'Korisnik je nevažeći. Molim pokušajte ponovo.',
         'not_available' => 'That asset is not available for checkout!',
-        'no_assets_selected' => 'You must select at least one asset from the list'
-    ),
+        'no_assets_selected' => 'Morate odabrati barem jednu imovinu s popisa',
+    ],
 
-    'checkin' => array(
-        'error'   		=> 'Asset was not checked in, please try again',
-        'success' 		=> 'Asset checked in successfully.',
-        'user_does_not_exist' => 'That user is invalid. Please try again.',
-        'already_checked_in'  => 'That asset is already checked in.',
+    'checkin' => [
+        'error'   		=> 'Imovina nije prijavljena. Pokušajte ponovo',
+        'success' 		=> 'Imovina je uspešno prijavljena.',
+        'user_does_not_exist' => 'Taj je korisnik nevažeći. Molim pokušajte ponovo.',
+        'already_checked_in'  => 'Imovina je već prijavljena.',
 
-    ),
+    ],
 
-    'requests' => array(
-        'error'   		=> 'Asset was not requested, please try again',
-        'success' 		=> 'Asset requested successfully.',
-        'canceled'      => 'Checkout request successfully canceled'
-    )
+    'requests' => [
+        'error'   		=> 'Imovina nije zatražena, pokušajte ponovo',
+        'success' 		=> 'Imovina je uspešno zatražena.',
+        'canceled'      => 'Checkout request successfully canceled',
+    ],
 
-);
+];

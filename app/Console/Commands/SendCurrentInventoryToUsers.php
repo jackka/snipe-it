@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Asset;
 use App\Models\User;
 use App\Notifications\CurrentInventory;
+use Illuminate\Console\Command;
 
 class SendCurrentInventoryToUsers extends Command
 {
@@ -40,22 +39,16 @@ class SendCurrentInventoryToUsers extends Command
      */
     public function handle()
     {
-
         $users = User::whereNull('deleted_at')->whereNotNull('email')->with('assets', 'accessories', 'licenses')->get();
 
         $count = 0;
         foreach ($users as $user) {
-
-            if (($user->assets->count() > 0) || ($user->accessories->count() > 0) || ($user->licenses->count() > 0))
-            {
+            if (($user->assets->count() > 0) || ($user->accessories->count() > 0) || ($user->licenses->count() > 0) || ($user->consumables->count() > 0)) {
                 $count++;
                 $user->notify((new CurrentInventory($user)));
             }
-
         }
 
         $this->info($count.' users notified.');
-
-
     }
 }

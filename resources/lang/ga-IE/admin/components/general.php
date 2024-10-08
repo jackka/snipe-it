@@ -1,8 +1,6 @@
 <?php
 
 return array(
-    'about_components_title' 			=> 'Maidir Comhpháirteanna',
-    'about_components_text'  			=> 'Is iad na comhpháirteanna míreanna atá mar chuid de shócmhainn, mar shampla HDD, RAM, etc.',
     'component_name'                  => 'Ainm an Chomhpháirt',
     'checkin'                             => 'Comhpháirt Checkin',
     'checkout'                             => 'Comhpháirt Seiceáil',
@@ -14,4 +12,5 @@ return array(
     'remaining' 			             => 'Ag fágáil',
     'total' 			                 => 'Iomlán',
     'update'                            => 'Comhpháirt Nuashonraithe',
+    'checkin_limit'            => 'Amount checked in must be equal to or less than :assigned_qty'
 );

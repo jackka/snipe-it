@@ -2,15 +2,11 @@
 
 namespace App\Presenters;
 
-use App\Helpers\Helper;
-
 /**
  * Class CategoryPresenter
- * @package App\Presenters
  */
 class CategoryPresenter extends Presenter
 {
-
     /**
      * Json Column Layout for bootstrap table
      * @return string
@@ -19,91 +15,103 @@ class CategoryPresenter extends Presenter
     {
         $layout = [
             [
-                "field" => "id",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" => trans('general.id'),
-                "visible" => false
+                'field' => 'id',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.id'),
+                'visible' => false,
             ], [
-                "field" => "name",
-                "searchable" => true,
-                "sortable" => true,
-                "title" => trans('general.name'),
-                "visible" => true,
-                "formatter" => 'categoriesLinkFormatter',
-            ],[
-                "field" => "image",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('general.image'),
-                "visible" => true,
-                "formatter" => 'imageFormatter',
-            ],[
-                "field" => "category_type",
-                "searchable" => true,
-                "sortable" => true,
-                "title" => trans('general.type'),
-                "visible" => true
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('general.name'),
+                'visible' => true,
+                'formatter' => 'categoriesLinkFormatter',
             ], [
-                "field" => "assets_count",
+                'field' => 'image',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('general.image'),
+                'visible' => true,
+                'formatter' => 'imageFormatter',
+            ], [
+                'field' => 'category_type',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.type'),
+                'visible' => true,
+            ], [
+                'field' => 'item_count',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('general.qty'),
+                'visible' => true,
+            ], [
+                'field' => 'has_eula',
+                'searchable' => false,
+                'sortable' => false,
+                'title' => trans('admin/categories/table.eula_text'),
+                'visible' => false,
+                'formatter' => 'trueFalseFormatter',
+            ], [
+                'field' => 'checkin_email',
+                'searchable' => false,
+                'sortable' => true,
+                'class' => 'css-envelope',
+                'title' => 'Send Email',
+                'visible' => true,
+                'formatter' => 'trueFalseFormatter',
+            ], [
+                'field' => 'require_acceptance',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('admin/categories/table.require_acceptance'),
+                'visible' => true,
+                'formatter' => 'trueFalseFormatter',
+            ], [
+                "field" => "use_default_eula",
                 "searchable" => false,
                 "sortable" => true,
-                "title" => trans('general.assets'),
-                "visible" => true
-            ], [
-                "field" => "accessories_count",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('general.accessories'),
-                "visible" => true
-            ], [
-                "field" => "consumables_count",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('general.consumables'),
-                "visible" => true
-            ], [
-                "field" => "components_count",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('general.components'),
-                "visible" => true
-            ], [
-                "field" => "licenses_count",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('general.licenses'),
-                "visible" => true
-            ], [
-                "field" => "eula",
-                "searchable" => false,
-                "sortable" => false,
-                "title" => trans('admin/categories/table.eula_text'),
-                "visible" => false,
+                "title" => trans('admin/categories/general.use_default_eula_column'),
+                'visible' => true,
                 "formatter" => 'trueFalseFormatter',
-            ],  [
-                "field" => "require_acceptance",
-                "searchable" => false,
-                "sortable" => true,
-                "title" => trans('admin/categories/table.require_acceptance'),
-                "visible" => true,
-                "formatter" => 'trueFalseFormatter',
+            ],[
+                'field' => 'created_by',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('general.created_by'),
+                'visible' => false,
+                'formatter' => 'usersLinkObjFormatter',
+            ], [
+                'field' => 'created_at',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.created_at'),
+                'visible' => false,
+                'formatter' => 'dateDisplayFormatter',
+            ], [
+                'field' => 'updated_at',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.updated_at'),
+                'visible' => false,
+                'formatter' => 'dateDisplayFormatter',
+            ], [
+                'field' => 'actions',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => false,
+                'title' => trans('table.actions'),
+		'formatter' => 'categoriesActionsFormatter',
             ],
-           [
-                "field" => "actions",
-                "searchable" => false,
-                "sortable" => false,
-                "switchable" => false,
-                "title" => trans('table.actions'),
-                "visible" => true,
-                "formatter" => "categoriesActionsFormatter",
-            ]
         ];
 
         return json_encode($layout);
     }
-
 
     /**
      * Link to this categories name

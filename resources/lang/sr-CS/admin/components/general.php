@@ -1,17 +1,16 @@
 <?php
 
 return array(
-    'about_components_title' 			=> 'About Components',
-    'about_components_text'  			=> 'Components are items that are part of an asset, for example HDD, RAM, etc.',
-    'component_name'                  => 'Component Name',
+    'component_name'                  => 'Naziv komponente',
     'checkin'                             => 'Checkin Component',
     'checkout'                             => 'Checkout Component',
-    'cost'				=> 'Purchase Cost',
-    'create'                             => 'Create Component',
-    'edit'                             => 'Edit Component',
-    'date'					=> 'Purchase Date',
-    'order'					=> 'Order Number',
-    'remaining' 			             => 'Remaining',
-    'total' 			                 => 'Total',
-    'update'                            => 'Update Component',
+    'cost'				=> 'Cena nabavke',
+    'create'                             => 'Kreiraj komponentu',
+    'edit'                             => 'Uređivanje komponente',
+    'date'					=> 'Datum kupovine',
+    'order'					=> 'Broj narudžbine',
+    'remaining' 			             => 'Preostalo',
+    'total' 			                 => 'Ukupno',
+    'update'                            => 'Ažuriraj komponentu',
+    'checkin_limit'            => 'Količina prijavljenih mora biti jednaka ili manja od :assigned_qty'
 );

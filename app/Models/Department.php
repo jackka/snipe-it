@@ -4,29 +4,33 @@ namespace App\Models;
 
 use App\Http\Traits\UniqueUndeletedTrait;
 use App\Models\Traits\Searchable;
-use Illuminate\Database\Eloquent\Model;
-use Log;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Watson\Validating\ValidatingTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\SnipeModel;
-use App\Models\User;
 
 class Department extends SnipeModel
 {
+    use CompanyableTrait;
+    use HasFactory;
+
     /**
      * Whether the model should inject it's identifier to the unique
      * validation rules before attempting validation. If this property
      * is not set in the model it will default to true.
      *
-     * @var boolean
+     * @var bool
      */
     protected $injectUniqueIdentifier = true;
 
     use ValidatingTrait, UniqueUndeletedTrait;
 
+    protected $casts = [
+        'manager_id'   => 'integer',
+        'location_id'  => 'integer',
+        'company_id'   => 'integer',
+    ];
+
     protected $rules = [
-        'name'                  => 'required|max:255',
-        'user_id'               => 'nullable|exists:users,id',
+        'name'                  => 'required|max:255|is_unique_department',
         'location_id'           => 'numeric|nullable',
         'company_id'            => 'numeric|nullable',
         'manager_id'            => 'numeric|nullable',
@@ -38,8 +42,10 @@ class Department extends SnipeModel
      * @var array
      */
     protected $fillable = [
-        'user_id',
+        'created_by',
         'name',
+        'phone',
+        'fax',
         'location_id',
         'company_id',
         'manager_id',
@@ -47,17 +53,17 @@ class Department extends SnipeModel
     ];
 
     use Searchable;
-    
+
     /**
      * The attributes that should be included when searching the model.
-     * 
+     *
      * @var array
      */
-    protected $searchableAttributes = ['name', 'notes'];
+    protected $searchableAttributes = ['name', 'notes', 'phone', 'fax'];
 
     /**
      * The relations and their attributes that should be included when searching the model.
-     * 
+     *
      * @var array
      */
     protected $searchableRelations = [];
@@ -71,9 +77,8 @@ class Department extends SnipeModel
      */
     public function company()
     {
-        return $this->belongsTo('\App\Models\Company', 'company_id');
+        return $this->belongsTo(\App\Models\Company::class, 'company_id');
     }
-
 
     /**
      * Establishes the department -> users relationship
@@ -84,9 +89,8 @@ class Department extends SnipeModel
      */
     public function users()
     {
-        return $this->hasMany('\App\Models\User', 'department_id');
+        return $this->hasMany(\App\Models\User::class, 'department_id');
     }
-
 
     /**
      * Establishes the department -> manager relationship
@@ -97,7 +101,7 @@ class Department extends SnipeModel
      */
     public function manager()
     {
-        return $this->belongsTo('\App\Models\User', 'manager_id');
+        return $this->belongsTo(\App\Models\User::class, 'manager_id');
     }
 
     /**
@@ -109,9 +113,9 @@ class Department extends SnipeModel
      */
     public function location()
     {
-        return $this->belongsTo('\App\Models\Location', 'location_id');
+        return $this->belongsTo(\App\Models\Location::class, 'location_id');
     }
-    
+
     /**
      * Query builder scope to order on location name
      *
@@ -137,6 +141,4 @@ class Department extends SnipeModel
     {
         return $query->leftJoin('users as department_user', 'departments.manager_id', '=', 'department_user.id')->orderBy('department_user.first_name', $order)->orderBy('department_user.last_name', $order);
     }
-
-
 }

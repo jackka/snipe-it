@@ -2,12 +2,12 @@
 
 {{-- Page title --}}
 @section('title')
-    Update Alert Settings
+    {{ trans('admin/settings/general.alert_title') }}
     @parent
 @stop
 
 @section('header_right')
-    <a href="{{ route('settings.index') }}" class="btn btn-default"> {{ trans('general.back') }}</a>
+    <a href="{{ route('settings.index') }}" class="btn btn-primary"> {{ trans('general.back') }}</a>
 @stop
 
 
@@ -31,9 +31,9 @@
 
             <div class="panel box box-default">
                 <div class="box-header with-border">
-                    <h4 class="box-title">
-                        <i class="fa fa-bell"></i> Alerts
-                    </h4>
+                    <h2 class="box-title">
+                        <x-icon type="bell"/> {{ trans('admin/settings/general.alerts') }}
+                    </h2>
                 </div>
                 <div class="box-body">
 
@@ -41,24 +41,22 @@
                     <div class="col-md-11 col-md-offset-1">
 
                         <!-- Alerts Enabled -->
-                        <div class="form-group {{ $errors->has('alert_email') ? 'error' : '' }}">
-                            <div class="col-md-3">
-                                {{ Form::label('alert_email', trans('admin/settings/general.alerts_enabled')) }}
-                            </div>
-                            <div class="col-md-5">
-                                {{ Form::checkbox('alerts_enabled', '1', Input::old('alerts_enabled', $setting->alerts_enabled),array('class' => 'minimal')) }}
-                                {{ trans('general.yes') }}
+                        <div class="form-group {{ $errors->has('alerts_enabled') ? 'error' : '' }}">
+                            <div class="col-md-9 col-md-offset-3">
+                                <label class="form-control">
+                                    {{ Form::checkbox('alerts_enabled', '1', old('alerts_enabled', $setting->alerts_enabled)) }}
+                                    {{  trans('admin/settings/general.alerts_enabled') }}
+                                </label>
                             </div>
                         </div>
 
                         <!-- Menu Alerts Enabled -->
                         <div class="form-group {{ $errors->has('show_alerts_in_menu') ? 'error' : '' }}">
-                            <div class="col-md-3">
-                                {{ Form::label('show_alerts_in_menu', trans('admin/settings/general.show_alerts_in_menu')) }}
-                            </div>
-                            <div class="col-md-5">
-                                {{ Form::checkbox('show_alerts_in_menu', '1', Input::old('show_alerts_in_menu', $setting->show_alerts_in_menu),array('class' => 'minimal')) }}
-                                {{ trans('general.yes') }}
+                            <div class="col-md-9 col-md-offset-3">
+                                <label class="form-control">
+                                    {{ Form::checkbox('show_alerts_in_menu', '1', old('show_alerts_in_menu', $setting->show_alerts_in_menu)) }}
+                                    {{ trans('admin/settings/general.show_alerts_in_menu') }}
+                                </label>
                             </div>
                         </div>
 
@@ -70,10 +68,10 @@
                                 {{ Form::label('alert_email', trans('admin/settings/general.alert_email')) }}
                             </div>
                             <div class="col-md-7">
-                                {{ Form::text('alert_email', Input::old('alert_email', $setting->alert_email), array('class' => 'form-control','placeholder' => 'admin@yourcompany.com')) }}
-                                {!! $errors->first('alert_email', '<span class="alert-msg">:message</span><br>') !!}
+                                {{ Form::text('alert_email', old('alert_email', $setting->alert_email), array('class' => 'form-control','placeholder' => 'admin@yourcompany.com')) }}
+                                {!! $errors->first('alert_email', '<span class="alert-msg" aria-hidden="true">:message</span><br>') !!}
 
-                                <p class="help-block">Email addresses or distribution lists you want alerts to be sent to, comma separated</p>
+                                <p class="help-block">{{ trans('admin/settings/general.alert_email_help') }}</p>
 
 
                             </div>
@@ -86,8 +84,8 @@
                                 {{ Form::label('admin_cc_email', trans('admin/settings/general.admin_cc_email')) }}
                             </div>
                             <div class="col-md-7">
-                                {{ Form::text('admin_cc_email', Input::old('admin_cc_email', $setting->admin_cc_email), array('class' => 'form-control','placeholder' => 'admin@yourcompany.com')) }}
-                                {!! $errors->first('admin_cc_email', '<span class="alert-msg">:message</span><br>') !!}
+                                {{ Form::text('admin_cc_email', old('admin_cc_email', $setting->admin_cc_email), array('class' => 'form-control','placeholder' => 'admin@yourcompany.com')) }}
+                                {!! $errors->first('admin_cc_email', '<span class="alert-msg" aria-hidden="true">:message</span><br>') !!}
 
                                 <p class="help-block">{{ trans('admin/settings/general.admin_cc_email_help') }}</p>
 
@@ -101,8 +99,8 @@
                                 {{ Form::label('alert_interval', trans('admin/settings/general.alert_interval')) }}
                             </div>
                             <div class="col-md-9">
-                                {{ Form::text('alert_interval', Input::old('alert_interval', $setting->alert_interval), array('class' => 'form-control','placeholder' => '30', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
-                                {!! $errors->first('alert_interval', '<span class="alert-msg">:message</span>') !!}
+                                {{ Form::text('alert_interval', old('alert_interval', $setting->alert_interval), array('class' => 'form-control','placeholder' => '30', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
+                                {!! $errors->first('alert_interval', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                             </div>
                         </div>
 
@@ -112,8 +110,8 @@
                                 {{ Form::label('alert_threshold', trans('admin/settings/general.alert_inv_threshold')) }}
                             </div>
                             <div class="col-md-9">
-                                {{ Form::text('alert_threshold', Input::old('alert_threshold', $setting->alert_threshold), array('class' => 'form-control','placeholder' => '5', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
-                                {!! $errors->first('alert_threshold', '<span class="alert-msg">:message</span>') !!}
+                                {{ Form::text('alert_threshold', old('alert_threshold', $setting->alert_threshold), array('class' => 'form-control','placeholder' => '5', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
+                                {!! $errors->first('alert_threshold', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                             </div>
                         </div>
 
@@ -124,11 +122,11 @@
                                 {{ Form::label('audit_interval', trans('admin/settings/general.audit_interval')) }}
                             </div>
                             <div class="input-group col-md-2">
-                                {{ Form::text('audit_interval', Input::old('audit_interval', $setting->audit_interval), array('class' => 'form-control','placeholder' => '12', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
+                                {{ Form::text('audit_interval', old('audit_interval', $setting->audit_interval), array('class' => 'form-control','placeholder' => '12', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
                                 <span class="input-group-addon">{{ trans('general.months') }}</span>
                             </div>
                             <div class="col-md-9 col-md-offset-3">
-                                {!! $errors->first('audit_interval', '<span class="alert-msg">:message</span>') !!}
+                                {!! $errors->first('audit_interval', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.audit_interval_help') }}</p>
                             </div>
                         </div>
@@ -139,7 +137,22 @@
                                 {{ Form::label('audit_warning_days', trans('admin/settings/general.audit_warning_days')) }}
                             </div>
                             <div class="input-group col-md-2">
-                                {{ Form::text('audit_warning_days', Input::old('audit_warning_days', $setting->audit_warning_days), array('class' => 'form-control','placeholder' => '14', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
+                                {{ Form::text('audit_warning_days', old('audit_warning_days', $setting->audit_warning_days), array('class' => 'form-control','placeholder' => '14', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
+                                <span class="input-group-addon">{{ trans('general.days') }}</span>
+                            </div>
+                            <div class="col-md-9 col-md-offset-3">
+                                {!! $errors->first('audit_warning_days', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                <p class="help-block">{{ trans('admin/settings/general.audit_warning_days_help') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Due for checkin days -->
+                        <div class="form-group {{ $errors->has('due_checkin_days') ? 'error' : '' }}">
+                            <div class="col-md-3">
+                                {{ Form::label('due_checkin_days', trans('admin/settings/general.due_checkin_days')) }}
+                            </div>
+                            <div class="input-group col-md-2">
+                                {{ Form::text('due_checkin_days', old('due_checkin_days', $setting->due_checkin_days), array('class' => 'form-control','placeholder' => '14', 'maxlength'=>'3', 'style'=>'width: 60px;')) }}
                                 <span class="input-group-addon">{{ trans('general.days') }}</span>
 
 
@@ -147,8 +160,8 @@
 
                             </div>
                             <div class="col-md-9 col-md-offset-3">
-                                {!! $errors->first('audit_warning_days', '<span class="alert-msg">:message</span>') !!}
-                                <p class="help-block">{{ trans('admin/settings/general.audit_warning_days_help') }}</p>
+                                {!! $errors->first('due_checkin_days', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                <p class="help-block">{{ trans('admin/settings/general.due_checkin_days_help') }}</p>
                             </div>
                         </div>
 
@@ -160,7 +173,7 @@
                         <a class="btn btn-link text-left" href="{{ route('settings.index') }}">{{ trans('button.cancel') }}</a>
                     </div>
                     <div class="text-right col-md-6">
-                        <button type="submit" class="btn btn-success"><i class="fa fa-check icon-white"></i> {{ trans('general.save') }}</button>
+                        <button type="submit" class="btn btn-primary"><x-icon type="checkmark" /> {{ trans('general.save') }}</button>
                     </div>
 
                 </div>

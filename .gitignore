@@ -1,6 +1,8 @@
 .couscous
 .DS_Store
 .env
+.env.testing
+phpstan.neon
 .idea
 /bin/
 /bootstrap/compiled.php
@@ -45,15 +47,27 @@ storage/private_uploads/users/*
 tests/_data/scenarios
 tests/_output/*
 tests/_support/_generated/*
+tests/coverage/*
 /npm-debug.log
 /storage/oauth-private.key
 /storage/oauth-public.key
-
+logs/*
 *.cache
 
 .vagrant
+*.log
+*.retry
 
 \.php_cs\.dist
 
 phpmd\.xml
 /public/storage
+_ide_helper.php
+.phpstorm.meta.php
+_ide_helper_models.php
+/.phplint-cache
+storage/ldap_client_tls.cert
+storage/ldap_client_tls.key
+/storage/framework/testing
+
+/.phpunit.cache

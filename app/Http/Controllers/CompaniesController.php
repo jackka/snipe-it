@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImageUploadRequest;
 use App\Models\Company;
 use Illuminate\Http\Request;
-use Image;
-use App\Http\Requests\ImageUploadRequest;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\RedirectResponse;
+use \Illuminate\Contracts\View\View;
 
 /**
  * This controller handles all actions related to Companies for
@@ -13,23 +16,19 @@ use Illuminate\Support\Facades\Storage;
  *
  * @version    v1.0
  */
-
 final class CompaniesController extends Controller
 {
-
     /**
      * Returns view to display listing of companies.
      *
      * @author [Abdullah Alansari] [<ahimta@gmail.com>]
      * @since [v1.8]
-     * @return \Illuminate\Contracts\View\View
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function index()
+    public function index() : View
     {
         $this->authorize('view', Company::class);
 
-        return view('companies/index')->with('companies', Company::all());
+        return view('companies/index');
     }
 
     /**
@@ -37,10 +36,8 @@ final class CompaniesController extends Controller
      *
      * @author [Abdullah Alansari] [<ahimta@gmail.com>]
      * @since [v1.8]
-     * @return \Illuminate\Contracts\View\View
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function create()
+    public function create() : View
     {
         $this->authorize('create', Company::class);
 
@@ -53,15 +50,17 @@ final class CompaniesController extends Controller
      * @author [Abdullah Alansari] [<ahimta@gmail.com>]
      * @since [v1.8]
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function store(ImageUploadRequest $request)
+    public function store(ImageUploadRequest $request) : RedirectResponse
     {
         $this->authorize('create', Company::class);
 
         $company = new Company;
         $company->name = $request->input('name');
+        $company->phone = $request->input('phone');
+        $company->fax = $request->input('fax');
+        $company->email = $request->input('email');
+        $company->created_by = auth()->id();
 
         $company = $request->handleImages($company);
 
@@ -69,9 +68,9 @@ final class CompaniesController extends Controller
             return redirect()->route('companies.index')
                 ->with('success', trans('admin/companies/message.create.success'));
         }
+
         return redirect()->back()->withInput()->withErrors($company->getErrors());
     }
-
 
     /**
      * Return form to edit existing company.
@@ -79,10 +78,8 @@ final class CompaniesController extends Controller
      * @author [Abdullah Alansari] [<ahimta@gmail.com>]
      * @since [v1.8]
      * @param int $companyId
-     * @return \Illuminate\Contracts\View\View
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function edit($companyId)
+    public function edit($companyId) : View | RedirectResponse
     {
         if (is_null($item = Company::find($companyId))) {
             return redirect()->route('companies.index')
@@ -101,10 +98,8 @@ final class CompaniesController extends Controller
      * @since [v1.8]
      * @param ImageUploadRequest $request
      * @param int $companyId
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(ImageUploadRequest $request, $companyId)
+    public function update(ImageUploadRequest $request, $companyId) : RedirectResponse
     {
         if (is_null($company = Company::find($companyId))) {
             return redirect()->route('companies.index')->with('error', trans('admin/companies/message.does_not_exist'));
@@ -113,6 +108,9 @@ final class CompaniesController extends Controller
         $this->authorize('update', $company);
 
         $company->name = $request->input('name');
+        $company->phone = $request->input('phone');
+        $company->fax = $request->input('fax');
+        $company->email = $request->input('email');
 
         $company = $request->handleImages($company);
 
@@ -120,8 +118,8 @@ final class CompaniesController extends Controller
             return redirect()->route('companies.index')
                 ->with('success', trans('admin/companies/message.update.success'));
         }
-        return redirect()->route('companies.edit', ['company' => $companyId])
-            ->with('error', trans('admin/companies/message.update.error'));
+
+        return redirect()->back()->withInput()->withErrors($company->getErrors());
     }
 
     /**
@@ -130,46 +128,36 @@ final class CompaniesController extends Controller
      * @author [Abdullah Alansari] [<ahimta@gmail.com>]
      * @since [v1.8]
      * @param int $companyId
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy($companyId)
+    public function destroy($companyId) : RedirectResponse
     {
-        $this->authorize('delete', $company);
-
         if (is_null($company = Company::find($companyId))) {
             return redirect()->route('companies.index')
                 ->with('error', trans('admin/companies/message.not_found'));
         }
 
-        try {
-
-            if ($company->image) {
-                try  {
-                    Storage::disk('public')->delete('companies'.'/'.$company->image);
-                } catch (\Exception $e) {
-                    \Log::debug($e);
-                }
-            }
-
-            $company->delete();
+        $this->authorize('delete', $company);
+        if (! $company->isDeletable()) {
             return redirect()->route('companies.index')
-                ->with('success', trans('admin/companies/message.delete.success'));
-        } catch (\Illuminate\Database\QueryException $exception) {
-        /*
-             * NOTE: This happens when there's a foreign key constraint violation
-             * For example when rows in other tables are referencing this company
-             */
-            if ($exception->getCode() == 23000) {
-                return redirect()->route('companies.index')
                     ->with('error', trans('admin/companies/message.assoc_users'));
-            }
-
-            throw $exception;
         }
+
+        if ($company->image) {
+            try {
+                Storage::disk('public')->delete('companies'.'/'.$company->image);
+            } catch (\Exception $e) {
+                Log::debug($e);
+            }
+        }
+
+        $company->delete();
+
+        return redirect()->route('companies.index')
+            ->with('success', trans('admin/companies/message.delete.success'));
     }
 
-    public function show($id) {
+    public function show($id) : View | RedirectResponse
+    {
         $this->authorize('view', Company::class);
 
         if (is_null($company = Company::find($id))) {
@@ -177,6 +165,6 @@ final class CompaniesController extends Controller
                 ->with('error', trans('admin/companies/message.not_found'));
         }
 
-        return view('companies/view')->with('company',$company);
+        return view('companies/view')->with('company', $company);
     }
 }

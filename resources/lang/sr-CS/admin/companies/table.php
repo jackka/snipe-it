@@ -1,9 +1,11 @@
 <?php
 return array(
-    'companies' => 'Companies',
-    'create'    => 'Create Company',
-    'title'     => 'Company',
-    'update'    => 'Update Company',
-    'name'      => 'Company Name',
+    'companies' => 'Firme',
+    'create'    => 'Kreiraj firmu',
+    'email'     => 'Adresa e-pošte kompanije',
+    'title'     => 'Firma',
+    'phone'     => 'Telefon kompanije',
+    'update'    => 'Ažuriraj firmu',
+    'name'      => 'Nayiv firme',
     'id'        => 'ID',
 );

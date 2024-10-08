@@ -1,8 +1,10 @@
 <?php
-
+use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogUdpHandler;
+use Illuminate\Support\Facades\Log;
 
-return [
+$config = [
 
     /*
     |--------------------------------------------------------------------------
@@ -33,22 +35,25 @@ return [
     */
 
     'channels' => [
+        // This will get overwritten to 'single' AND 'rollbar' in the code at the bottom of this file
+        // if a ROLLBAR_TOKEN is given in the .env file
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
+            'ignore_exceptions' => false,
         ],
 
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
-            'level' => env('APP_LOG_LEVEL', 'error'),
+            'level' => env('LOG_LEVEL', 'warning'),
         ],
 
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
-            'level' => 'debug',
-            'days' =>  env('APP_LOG_MAX_FILES', 5),
+            'level' => env('LOG_LEVEL', 'warning'),
+            'days' => env('LOG_MAX_DAYS', 14),
         ],
 
         'slack' => [
@@ -56,12 +61,24 @@ return [
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
             'username' => 'Laravel Log',
             'emoji' => ':boom:',
-            'level' => 'critical',
+            'level' => env('LOG_LEVEL', 'critical'),
+        ],
+
+        'papertrail' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'warning'),
+            'handler' => SyslogUdpHandler::class,
+            'handler_with' => [
+                'host' => env('PAPERTRAIL_URL'),
+                'port' => env('PAPERTRAIL_PORT'),
+            ],
         ],
 
         'stderr' => [
             'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'warning'),
             'handler' => StreamHandler::class,
+            'formatter' => env('LOG_STDERR_FORMATTER'),
             'with' => [
                 'stream' => 'php://stderr',
             ],
@@ -69,13 +86,59 @@ return [
 
         'syslog' => [
             'driver' => 'syslog',
-            'level' => env('APP_LOG_LEVEL', 'error'),
+            'level' => env('LOG_LEVEL', 'warning'),
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
-            'level' => env('APP_LOG_LEVEL', 'error'),
+            'level' => env('LOG_LEVEL', 'warning'),
+        ],
+
+        'null' => [
+            'driver' => 'monolog',
+            'handler' => NullHandler::class,
+        ],
+
+        'emergency' => [
+            'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'scimtrace' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/scim.log')
+        ],
+
+        'rollbar' => [
+            'driver' => 'monolog',
+            'handler' => \Rollbar\Laravel\MonologHandler::class,
+            'access_token' => env('ROLLBAR_TOKEN'),
+            'level' => env('ROLLBAR_LEVEL', 'error'),
         ],
     ],
 
 ];
+
+
+if ((env('APP_ENV')=='production') && (env('ROLLBAR_TOKEN'))) {
+    // Only add rollbar if the .env has a rollbar token
+    $config['channels']['stack']['channels'] = ['single', 'rollbar'];
+
+    // and only add the rollbar filter under the same conditions
+    // Note: it will *not* be cacheable
+    $config['channels']['rollbar']['check_ignore'] = function ($isUncaught, $args, $payload) {
+        if (App::environment('production') && is_object($args) && get_class($args) == Rollbar\ErrorWrapper::class && $args->errorLevel == E_WARNING ) {
+            Log::info("IGNORING E_WARNING in production mode: ".$args->getMessage());
+            return true; // "TRUE - you should ignore it!"
+        }
+        $needle = "ArieTimmerman\\Laravel\\SCIMServer\\Exceptions\\SCIMException";
+        if (App::environment('production') && is_string($args) && strncmp($args, $needle, strlen($needle) ) === 0 ) {
+            Log::info("String: '$args' looks like a SCIM Exception; ignoring error");
+            return true; //yes, *do* ignore it
+        }
+        return false;
+    };
+
+}
+
+
+return $config;

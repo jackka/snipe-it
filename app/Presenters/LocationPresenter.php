@@ -2,15 +2,11 @@
 
 namespace App\Presenters;
 
-use App\Helpers\Helper;
-
 /**
  * Class LocationPresenter
- * @package App\Presenters
  */
 class LocationPresenter extends Presenter
 {
-
     /**
      * Json Column Layout for bootstrap table
      * @return string
@@ -18,148 +14,197 @@ class LocationPresenter extends Presenter
     public static function dataTableLayout()
     {
         $layout = [
-
             [
-                "field" => "id",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" => trans('general.id'),
-                "visible" => false
+                'field' => 'bulk_selectable',
+                'checkbox' => true,
+                'formatter' => 'checkboxEnabledFormatter',
             ],
             [
-                "field" => "name",
-                "searchable" => true,
-                "sortable" => true,
-                "title" => trans('admin/locations/table.name'),
-                "visible" => true,
-                "formatter" => "locationsLinkFormatter"
+                'field' => 'id',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.id'),
+                'visible' => false,
             ],
             [
-                "field" => "image",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" => trans('general.image'),
-                "visible" => true,
-                "formatter" => "imageFormatter"
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('admin/locations/table.name'),
+                'visible' => true,
+                'formatter' => 'locationsLinkFormatter',
             ],
             [
-                "field" => "parent",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" => trans('admin/locations/table.parent'),
-                "visible" => true,
-                "formatter" => "locationsLinkObjFormatter"
-            ],
-
-            [
-                "field" => "assets_count",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.assets_rtd'),
-                "visible" => true,
+                'field' => 'image',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.image'),
+                'visible' => true,
+                'formatter' => 'imageFormatter',
             ],
             [
-                "field" => "assigned_assets_count",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.assets_checkedout'),
-                "visible" => true,
-            ],
-            [
-                "field" => "users_count",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('general.people'),
-                "visible" => true,
-            ],
-            [
-                "field" => "currency",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('general.currency'),
-                "visible" => true,
-            ],
-            [
-                "field" => "address",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.address'),
-                "visible" => true,
-            ],
-            [
-                "field" => "city",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.city'),
-                "visible" => true,
-            ],
-            [
-                "field" => "state",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.state'),
-                "visible" => true,
-            ],
-            [
-                "field" => "zip",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.zip'),
-                "visible" => false,
-            ],
-            [
-                "field" => "country",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/locations/table.country'),
-                "visible" => false,
-            ],[
-                "field" => "manager",
-                "searchable" => false,
-                "sortable" => true,
-                "switchable" => true,
-                "title" =>  trans('admin/users/table.manager'),
-                "visible" => false,
-                "formatter" => 'usersLinkObjFormatter'
+                'field' => 'parent',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/locations/table.parent'),
+                'visible' => true,
+                'formatter' => 'locationsLinkObjFormatter',
             ],
 
             [
-                "field" => "created_at",
-                "searchable" => true,
-                "sortable" => true,
-                "switchable" => true,
-                "title" => trans('general.created_at'),
-                "visible" => false,
-                'formatter' => 'dateDisplayFormatter'
+                'field' => 'assets_count',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/message.current_location'),
+                'visible' => true,
             ],
 
             [
-                "field" => "actions",
-                "searchable" => false,
-                "sortable" => false,
-                "switchable" => false,
-                "title" => trans('table.actions'),
-                "visible" => true,
-                "formatter" => "locationsActionsFormatter",
-            ]
+                'field' => 'rtd_assets_count',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/hardware/form.default_location'),
+                'visible' => false,
+            ],
+
+            [
+                'field' => 'assigned_assets_count',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/message.assigned_assets'),
+                'visible' => true,
+            ],
+
+            [
+                'field' => 'users_count',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('general.people'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'currency',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('general.currency'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'address',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.address'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'address2',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.address2'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'city',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.city'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'state',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.state'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'zip',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.zip'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'country',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.country'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'phone',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/users/table.phone'),
+                'visible' => false,
+                'formatter'    => 'phoneFormatter',
+            ],
+            [
+                'field' => 'fax',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/suppliers/table.fax'),
+                'visible' => false,
+                'formatter'    => 'phoneFormatter',
+            ],
+            [
+                'field' => 'ldap_ou',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/locations/table.ldap_ou'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'manager',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' =>  trans('admin/users/table.manager'),
+                'visible' => false,
+                'formatter' => 'usersLinkObjFormatter',
+            ],
+
+            [
+                'field' => 'created_at',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.created_at'),
+                'visible' => false,
+                'formatter' => 'dateDisplayFormatter',
+            ],
+
+            [
+                'field' => 'actions',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => false,
+                'title' => trans('table.actions'),
+                'visible' => true,
+                'formatter' => 'locationsActionsFormatter',
+            ],
         ];
 
         return json_encode($layout);
     }
-
-
 
     /**
      * Link to this locations name
@@ -167,7 +212,7 @@ class LocationPresenter extends Presenter
      */
     public function nameUrl()
     {
-        return (string)link_to_route('locations.show', $this->name, $this->id);
+        return (string) link_to_route('locations.show', $this->name, $this->id);
     }
 
     /**
@@ -190,10 +235,11 @@ class LocationPresenter extends Presenter
 
     public function glyph()
     {
-        return '<i class="fa fa-map-marker"></i>';
+        return '<x-icon type="locations" />';
     }
-    
-    public function fullName() {
+
+    public function fullName()
+    {
         return $this->name;
     }
 }

@@ -1,8 +1,6 @@
 <?php
 
 return array(
-    'about_components_title' 			=> 'Tentang Komponen',
-    'about_components_text'  			=> 'Komponen adalah bagian dari aset, contoh HDD, RAM, dll.',
     'component_name'                  => 'Nama Komponen',
     'checkin'                             => 'Komponen Masuk',
     'checkout'                             => 'Komponen Keluar',
@@ -14,4 +12,5 @@ return array(
     'remaining' 			             => 'Sisa',
     'total' 			                 => 'Total',
     'update'                            => 'Perbaharui Komponen',
+    'checkin_limit'            => 'Amount checked in must be equal to or less than :assigned_qty'
 );

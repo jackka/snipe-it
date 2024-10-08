@@ -13,14 +13,16 @@
 @if ((isset($item->name)) && ($item->name!=''))
 | **{{ trans('mail.asset_name') }}** | {{ $item->name }} |
 @endif
+@if (($item->name!=$item->asset_tag))
 | **{{ trans('mail.asset_tag') }}** | {{ $item->asset_tag }} |
+@endif
 @if (isset($item->manufacturer))
 | **{{ trans('general.manufacturer') }}** | {{ $item->manufacturer->name }} |
 @endif
 @if (isset($item->model))
 | **{{ trans('general.asset_model') }}** | {{ $item->model->name }} |
 @endif
-@if (isset($item->model->model_number))
+@if ((isset($item->model->model_number)) && ($item->model->name!=$item->model->model_number))
 | **{{ trans('general.model_no') }}** | {{ $item->model->model_number }} |
 @endif
 @if (isset($item->serial))
@@ -28,6 +30,9 @@
 @endif
 @if (isset($last_checkout))
 | **{{ trans('mail.checkout_date') }}** | {{ $last_checkout }} |
+@endif
+@if (isset($status))
+| **{{ trans('general.status') }}** | {{ $status }} |
 @endif
 @if ((isset($expected_checkin)) && ($expected_checkin!=''))
 | **{{ trans('mail.expecting_checkin_date') }}** | {{ $expected_checkin }} |
@@ -64,7 +69,7 @@
 @endif
 
 
-Thanks,
+{{ trans('mail.best_regards') }}
 
 {{ $snipeSettings->site_name }}
 

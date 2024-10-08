@@ -2,37 +2,39 @@
 
 @section('title0')
 
-  @if ((Input::get('company_id')) && ($company))
+  @if ((Request::get('company_id')) && ($company))
     {{ $company->name }}
   @endif
 
 
 
-@if (Input::get('status'))
-  @if (Input::get('status')=='Pending')
+@if (Request::get('status'))
+  @if (Request::get('status')=='Pending')
     {{ trans('general.pending') }}
-  @elseif (Input::get('status')=='RTD')
+  @elseif (Request::get('status')=='RTD')
     {{ trans('general.ready_to_deploy') }}
-  @elseif (Input::get('status')=='Deployed')
+  @elseif (Request::get('status')=='Deployed')
     {{ trans('general.deployed') }}
-  @elseif (Input::get('status')=='Undeployable')
+  @elseif (Request::get('status')=='Undeployable')
     {{ trans('general.undeployable') }}
-  @elseif (Input::get('status')=='Deployable')
+  @elseif (Request::get('status')=='Deployable')
     {{ trans('general.deployed') }}
-  @elseif (Input::get('status')=='Requestable')
+  @elseif (Request::get('status')=='Requestable')
     {{ trans('admin/hardware/general.requestable') }}
-  @elseif (Input::get('status')=='Archived')
+  @elseif (Request::get('status')=='Archived')
     {{ trans('general.archived') }}
-  @elseif (Input::get('status')=='Deleted')
+  @elseif (Request::get('status')=='Deleted')
     {{ trans('general.deleted') }}
+  @elseif (Request::get('status')=='byod')
+    {{ trans('general.byod') }}
   @endif
 @else
 {{ trans('general.all') }}
 @endif
 {{ trans('general.assets') }}
 
-  @if (Input::has('order_number'))
-    : Order #{{ Input::get('order_number') }}
+  @if (Request::has('order_number'))
+    : Order #{{ strval(Request::get('order_number')) }}
   @endif
 @stop
 
@@ -43,9 +45,9 @@
 
 @section('header_right')
   <a href="{{ route('reports/custom') }}" style="margin-right: 5px;" class="btn btn-default">
-    Custom Export</a>
+    {{ trans('admin/hardware/general.custom_export') }}</a>
   @can('create', \App\Models\Asset::class)
-  <a href="{{ route('hardware.create') }}" class="btn btn-primary pull-right"></i> {{ trans('general.create') }}</a>
+  <a href="{{ route('hardware.create') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "n" : ''}} class="btn btn-primary pull-right"></i> {{ trans('general.create') }}</a>
   @endcan
 
 @stop
@@ -57,24 +59,12 @@
   <div class="col-md-12">
     <div class="box">
       <div class="box-body">
-        {{ Form::open([
-          'method' => 'POST',
-          'route' => ['hardware/bulkedit'],
-          'class' => 'form-inline',
-           'id' => 'bulkForm']) }}
+       
           <div class="row">
             <div class="col-md-12">
-              @if (Input::get('status')!='Deleted')
-              <div id="toolbar">
-                <select name="bulk_actions" class="form-control select2">
-                  <option value="edit">Edit</option>
-                  <option value="delete">Delete</option>
-                  <option value="labels">Generate Labels</option>
-                </select>
-                <button class="btn btn-primary" id="bulkEdit" disabled>Go</button>
-              </div>
-              @endif
 
+                @include('partials.asset-bulk-actions', ['status' => Request::get('status')])
+                   
               <table
                 data-advanced-search="true"
                 data-click-to-select="true"
@@ -83,6 +73,7 @@
                 data-pagination="true"
                 data-id-table="assetsListingTable"
                 data-search="true"
+                data-search-text="{{ e(Session::get('search')) }}"
                 data-side-pagination="server"
                 data-show-columns="true"
                 data-show-export="true"
@@ -90,23 +81,26 @@
                 data-show-refresh="true"
                 data-sort-order="asc"
                 data-sort-name="name"
-                data-toolbar="#toolbar"
+                data-show-fullscreen="true"
+                data-toolbar="#assetsBulkEditToolbar"
+                data-bulk-button-id="#bulkAssetEditButton"
+                data-bulk-form-id="#assetsBulkForm"
                 id="assetsListingTable"
                 class="table table-striped snipe-table"
                 data-url="{{ route('api.assets.index',
-                    array('status' => e(Input::get('status')),
-                    'order_number'=>e(Input::get('order_number')),
-                    'company_id'=>e(Input::get('company_id')),
-                    'status_id'=>e(Input::get('status_id')))) }}"
+                    array('status' => e(Request::get('status')),
+                    'order_number'=>e(strval(Request::get('order_number'))),
+                    'company_id'=>e(Request::get('company_id')),
+                    'status_id'=>e(Request::get('status_id')))) }}"
                 data-export-options='{
-                "fileName": "export{{ (Input::has('status')) ? '-'.str_slug(Input::get('status')) : '' }}-assets-{{ date('Y-m-d') }}",
+                "fileName": "export{{ (Request::has('status')) ? '-'.str_slug(Request::get('status')) : '' }}-assets-{{ date('Y-m-d') }}",
                 "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                 }'>
               </table>
 
             </div><!-- /.col -->
           </div><!-- /.row -->
-        {{ Form::close() }}
+        
       </div><!-- ./box-body -->
     </div><!-- /.box -->
   </div>

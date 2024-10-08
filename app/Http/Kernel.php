@@ -14,18 +14,19 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \App\Http\Middleware\TrustProxies::class,
+        \App\Http\Middleware\NoSessionStore::class,
+        \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \App\Http\Middleware\FrameGuard::class,
-        \App\Http\Middleware\XssProtectHeader::class,
-        \App\Http\Middleware\ReferrerPolicyHeader::class,
-        \App\Http\Middleware\ContentSecurityPolicyHeader::class,
-        \App\Http\Middleware\NosniffGuard::class,
-        \Fideloper\Proxy\TrustProxies::class,
         \App\Http\Middleware\CheckForSetup::class,
         \App\Http\Middleware\CheckForDebug::class,
-       // \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \App\Http\Middleware\SecurityHeaders::class,
+        \App\Http\Middleware\PreventBackHistory::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
+
     ];
 
     /**
@@ -39,13 +40,18 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \App\Http\Middleware\CheckLocale::class,
+            \App\Http\Middleware\CheckUserIsActivated::class,
             \App\Http\Middleware\CheckForTwoFactor::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+            \App\Http\Middleware\AssetCountForSidebar::class,
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
         'api' => [
-            'throttle:60,1',
             'auth:api',
+            \App\Http\Middleware\CheckLocale::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
 
